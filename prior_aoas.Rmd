@@ -1,0 +1,47 @@
+---
+title: "Snodgrass animal AoAs"
+author: "Dan Yurovsky and Ashley Leung"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+  toc: false
+number_sections: false
+theme: lumen
+toc_float: false
+code_folding: hide
+---
+
+```{r load-libraries}
+library(here)
+library(janitor)
+library(readxl)
+library(ggthemes)
+library(tidyverse)
+```
+
+
+```{r load-snodgrass}
+snodgrass_animals <- read_csv(here("corpus_data/cycowicz_data.csv")) %>%
+  clean_names() %>%
+  rename(word = intentional_name)
+```
+
+```{r load-kuperman}
+kuperman_aoas <- read_excel(
+  here("corpus_data/AoA_ratings_Kuperman_et_al_BRM.xlsx")) %>%
+  clean_names() %>%
+  select(word, rating_mean, rating_sd) %>%
+  rename(aoa = rating_mean, sd = rating_sd) %>%
+  mutate_at(vars(aoa, sd), as.numeric)
+```
+
+```{r plot}
+joined_data <- left_join(snodgrass_animals, kuperman_aoas, by = "word") %>%
+  arrange(desc(aoa)) %>%
+  mutate(word = factor(word, levels = word))
+
+ggplot(joined_data, aes(x = word, y = aoa)) +
+  geom_point() + 
+  coord_flip() + 
+  theme_minimal()
+```
