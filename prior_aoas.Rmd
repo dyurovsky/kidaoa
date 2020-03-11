@@ -40,8 +40,14 @@ joined_data <- left_join(snodgrass_animals, kuperman_aoas, by = "word") %>%
   arrange(desc(aoa)) %>%
   mutate(word = factor(word, levels = word))
 
-ggplot(joined_data, aes(x = word, y = aoa)) +
+
+binned_data <- joined_data %>%
+  filter(!is_insect) %>%
+  mutate(quintile = cut(aoa, 5))
+
+ggplot(binned_data, aes(x = word, y = aoa, color = quintile)) +
   geom_point() + 
   coord_flip() + 
-  theme_minimal()
+  theme_minimal() + 
+  scale_color_ptol()
 ```
