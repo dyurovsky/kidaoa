@@ -43,9 +43,12 @@ joined_data <- left_join(snodgrass_animals, kuperman_aoas, by = "word") %>%
 
 binned_data <- joined_data %>%
   filter(!is_insect) %>%
-  mutate(quintile = cut(aoa, 5))
+  mutate(quintile = cut(aoa, 5)) %>%
+  group_by(quintile)%>%
+  mutate(rank = rank(desc(percent_agreement))) %>%
+  filter(rank <= 3.5)
 
-ggplot(binned_data, aes(x = word, y = aoa, color = quintile)) +
+ggplot(binned_data, aes(x = word, y = aoa, color = quintile, size = percent_agreement)) +
   geom_point() + 
   coord_flip() + 
   theme_minimal() + 
