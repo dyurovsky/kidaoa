@@ -1,0 +1,60 @@
+---
+title: "Kid AoA expeirment analysis"
+author: "Ashley Leung and Dan Yurovsky"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+  toc: false
+number_sections: false
+theme: lumen
+toc_float: false
+code_folding: hide
+---
+
+```{r load-libraries}
+library(here)
+library(janitor)
+library(ggthemes)
+library(tidyverse)
+library(ggrepel)
+library(lme4)
+library(lmerTest)
+library(broom)
+library(broom.mixed)
+
+theme_set(theme_classic(base_size = 14))
+```
+
+```{r load-data}
+pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
+  clean_names() %>%
+  pivot_longer(cols = c(p1, p2), names_to = "participant") %>%
+  pivot_wider(names_from = subject_number, values_from = value) %>%
+  pivot_longer(cols = ball:penguin, names_to = "word", values_to = "judgment") %>%
+  mutate(type = if_else(word == "ball", "practice", "test"),
+         judgment = as.numeric(judgment))
+
+kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
+```
+
+```{r plot-pilot-data}
+test_data <- pilot_data %>%
+  filter(type == "test") %>%
+  left_join(kuperman_aoas, by = "word")
+
+
+ggplot(test_data, aes(x = aoa, y = judgment, group = age,
+                      label = word)) + 
+  geom_label_repel() + 
+  geom_smooth(method = "lm") + 
+  facet_wrap(~ age)
+```
+  
+model
+```{r model}
+model <- test_data %>%
+  mutate(centered_judgment = judgment - 3.5) %>%
+  lm(judgment ~ aoa * age + h, data = .)
+
+tidy(model) 
+```
