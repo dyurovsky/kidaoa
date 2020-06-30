@@ -1,6 +1,6 @@
 ---
 title: "Kid AoA expeirment analysis"
-author: "Ashley Leung and Dan Yurovsky"
+author: "Ashley Leung, Ben Morris, and Dan Yurovsky"
 date: '`r Sys.Date()`'
 output: 
   html_document:
