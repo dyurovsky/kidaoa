@@ -27,11 +27,11 @@ theme_set(theme_classic(base_size = 14))
 
 ```{r load-data,, warning = F, message = F}
 #adjust this total n to grab all the participants data below
-n <- 7
+n <- 8
 
 pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
   clean_names() %>%
-  pivot_longer(cols = paste("p", seq(1:7), sep=''), names_to = "participant") %>%
+  pivot_longer(cols = paste("p", seq(1:8), sep=''), names_to = "participant") %>%
   pivot_wider(names_from = subject_number, values_from = value) %>%
   pivot_longer(cols = ball:penguin, names_to = "word", values_to = "judgment") %>%
   mutate(type = if_else(word == "ball", "practice", "test"),
