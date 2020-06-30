@@ -11,7 +11,7 @@ toc_float: false
 code_folding: hide
 ---
 
-```{r load-libraries}
+```{r load-libraries, warning = F, message = F}
 library(here)
 library(janitor)
 library(ggthemes)
@@ -25,10 +25,13 @@ library(broom.mixed)
 theme_set(theme_classic(base_size = 14))
 ```
 
-```{r load-data}
+```{r load-data,, warning = F, message = F}
+#adjust this total n to grab all the participants data below
+n <- 7
+
 pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
   clean_names() %>%
-  pivot_longer(cols = c(p1, p2), names_to = "participant") %>%
+  pivot_longer(cols = paste("p", seq(1:7), sep=''), names_to = "participant") %>%
   pivot_wider(names_from = subject_number, values_from = value) %>%
   pivot_longer(cols = ball:penguin, names_to = "word", values_to = "judgment") %>%
   mutate(type = if_else(word == "ball", "practice", "test"),
@@ -41,16 +44,58 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 test_data <- pilot_data %>%
   filter(type == "test") %>%
   left_join(kuperman_aoas, by = "word")
+```
+
+# Overall Effect
+
+```{r}
+data_overall <- test_data %>% 
+  group_by(word, aoa) %>%
+  summarize(judgment = mean(judgment))
+
+ggplot(data_overall, aes(x = aoa, y = judgment,
+                      label = word)) + 
+  geom_label_repel() + 
+  geom_smooth(method = "lm") 
+```
 
 
+
+
+# Each participant's judgments
+
+```{r, fig.height=8}
 ggplot(test_data, aes(x = aoa, y = judgment, group = age,
                       label = word)) + 
   geom_label_repel() + 
   geom_smooth(method = "lm") + 
-  facet_wrap(~ age)
+  facet_wrap( ~ participant)
 ```
+
+# By age group (4-5, 6-7, 8-9)
+
+```{r}
+data_by_age <- test_data %>% 
+  mutate(age_group = case_when(
+    age == 4 | age == 5 ~ "4-5-year-olds",
+    age == 6 | age == 7 ~ "6-7-year-olds",
+    age == 8 | age == 9 ~ "8-9-year-olds"
+  )) %>%
+  group_by(age_group, word, aoa) %>%
+  summarize(judgment = mean(judgment))
+
+ggplot(data_by_age, aes(x = aoa, y = judgment, group = age_group,
+                      label = word)) + 
+  geom_label_repel() + 
+  geom_smooth(method = "lm") + 
+  facet_grid(. ~ age_group)
+```
+
+
+
   
-model
+# Model
+
 ```{r model}
 model <- test_data %>%
   mutate(centered_judgment = judgment - 3.5) %>%
