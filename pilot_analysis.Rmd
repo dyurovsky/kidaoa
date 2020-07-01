@@ -27,11 +27,11 @@ theme_set(theme_classic(base_size = 14))
 
 ```{r load-data,, warning = F, message = F}
 #adjust this total n to grab all the participants data below
-n <- 8
+n <- 12
 
 pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
   clean_names() %>%
-  pivot_longer(cols = paste("p", seq(1:8), sep=''), names_to = "participant") %>%
+  pivot_longer(cols = paste("p", seq(1:n), sep=''), names_to = "participant") %>%
   pivot_wider(names_from = subject_number, values_from = value) %>%
   pivot_longer(cols = ball:penguin, names_to = "word", values_to = "judgment") %>%
   mutate(type = if_else(word == "ball", "practice", "test"),
@@ -43,7 +43,15 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 ```{r plot-pilot-data}
 test_data <- pilot_data %>%
   filter(type == "test") %>%
-  left_join(kuperman_aoas, by = "word")
+  left_join(kuperman_aoas, by = "word") %>%
+  rowwise() %>%
+  #cleaner participant id
+  mutate(participant = as.numeric(str_split(participant, "p")[[1]][2])) %>%
+  mutate(age_group = case_when(
+    age == 4 | age == 5 ~ "4-5-year-olds",
+    age == 6 | age == 7 ~ "6-7-year-olds",
+    age == 8 | age == 9 ~ "8-9-year-olds"
+  ))
 ```
 
 # Overall Effect
@@ -56,31 +64,46 @@ data_overall <- test_data %>%
 ggplot(data_overall, aes(x = aoa, y = judgment,
                       label = word)) + 
   geom_label_repel() + 
-  geom_smooth(method = "lm") 
+  geom_smooth(method = "lm") +
+  xlab("Kuperman AoA estimates (adults)") + ylab("Kid Judgments")
 ```
-
-
 
 
 # Each participant's judgments
 
-```{r, fig.height=8}
-ggplot(test_data, aes(x = aoa, y = judgment, group = age,
+```{r}
+test_data %>%
+  ggplot(aes(x = aoa, y = judgment,
                       label = word)) + 
-  geom_label_repel() + 
+  geom_jitter(aes(alpha = .2)) +
   geom_smooth(method = "lm") + 
   facet_wrap( ~ participant)
 ```
 
-# By age group (4-5, 6-7, 8-9)
+#### Individuals but ordered by age (group)
+
+```{r, fig.height=8}
+within_age_subj <- test_data %>%
+  group_by(age_group) %>%
+  distinct(participant) %>%
+  mutate(within_age_subj = seq(n()))
+
+tmp <- left_join(test_data, within_age_subj, by=c('participant', 'age_group'))
+  
+tmp %>%
+  ggplot(aes(x = aoa, y = judgment, group = age_group, color = age_group,
+                      label = word)) + 
+  geom_jitter(aes(alpha = .2)) +
+  geom_smooth(method = "lm") + 
+  facet_grid(age_group ~ within_age_subj) +
+  ggtitle("Individual Participant's Judgments, split by age groups")
+```
+
+
+# Averages by age group (4-5, 6-7, 8-9)
 
 ```{r}
 data_by_age <- test_data %>% 
-  mutate(age_group = case_when(
-    age == 4 | age == 5 ~ "4-5-year-olds",
-    age == 6 | age == 7 ~ "6-7-year-olds",
-    age == 8 | age == 9 ~ "8-9-year-olds"
-  )) %>%
   group_by(age_group, word, aoa) %>%
   summarize(judgment = mean(judgment))
 
