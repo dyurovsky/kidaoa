@@ -27,7 +27,7 @@ theme_set(theme_classic(base_size = 14))
 
 ```{r load-data,, warning = F, message = F}
 #adjust this total n to grab all the participants data below
-n <- 12
+n <- 16
 
 pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
   clean_names() %>%
@@ -39,6 +39,7 @@ pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
 
 kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 ```
+
 
 ```{r plot-pilot-data}
 test_data <- pilot_data %>%
@@ -59,13 +60,14 @@ test_data <- pilot_data %>%
 ```{r}
 data_overall <- test_data %>% 
   group_by(word, aoa) %>%
-  summarize(judgment = mean(judgment))
+  summarize(judgment = mean(judgment, na.rm = T))
 
 ggplot(data_overall, aes(x = aoa, y = judgment,
                       label = word)) + 
-  geom_label_repel() + 
   geom_smooth(method = "lm") +
-  xlab("Kuperman AoA estimates (adults)") + ylab("Kid Judgments")
+  geom_label_repel() + 
+  xlab("Kuperman AoA estimates (adults)") +
+  ylab("Kid Judgments")
 ```
 
 
@@ -79,6 +81,7 @@ test_data %>%
   geom_smooth(method = "lm") + 
   facet_wrap( ~ participant)
 ```
+
 
 #### Individuals but ordered by age (group)
 
@@ -96,7 +99,8 @@ tmp %>%
   geom_jitter(aes(alpha = .2)) +
   geom_smooth(method = "lm") + 
   facet_grid(age_group ~ within_age_subj) +
-  ggtitle("Individual Participant's Judgments, split by age groups")
+  ggtitle("Individual Participant's Judgments, split by age groups") +
+  coord_cartesian(ylim= c(0,7))
 ```
 
 
@@ -105,13 +109,13 @@ tmp %>%
 ```{r}
 data_by_age <- test_data %>% 
   group_by(age_group, word, aoa) %>%
-  summarize(judgment = mean(judgment))
+  summarize(judgment = mean(judgment, na.rm=T))
 
 ggplot(data_by_age, aes(x = aoa, y = judgment, group = age_group,
                       label = word)) + 
   geom_label_repel() + 
   geom_smooth(method = "lm") + 
-  facet_grid(. ~ age_group)
+  facet_grid(.~age_group)
 ```
 
 
