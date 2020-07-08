@@ -54,3 +54,10 @@ ggplot(binned_data, aes(x = word, y = aoa, color = quintile, size = percent_agre
   theme_minimal() + 
   scale_color_ptol()
 ```
+
+write tidy AoAs
+```{r write_aoas}
+joined_data %>%
+  select(word, h, percent_agreement, familiarity, complexity, aoa) %>%
+  write_csv(here("corpus_data/kuperman_aoas.csv"))
+```

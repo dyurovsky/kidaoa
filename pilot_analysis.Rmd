@@ -13,6 +13,7 @@ code_folding: hide
 
 ```{r load-libraries, warning = F, message = F}
 library(here)
+library(knitr)
 library(janitor)
 library(ggthemes)
 library(tidyverse)
@@ -21,6 +22,7 @@ library(lme4)
 library(lmerTest)
 library(broom)
 library(broom.mixed)
+library(tidyboot)
 
 theme_set(theme_classic(base_size = 14))
 ```
@@ -42,23 +44,26 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 
 
 ```{r plot-pilot-data}
-test_data <- pilot_data %>%
-  filter(type == "test") %>%
+joined_data <- pilot_data %>%
   left_join(kuperman_aoas, by = "word") %>%
-  rowwise() %>%
-  #cleaner participant id
-  mutate(participant = as.numeric(str_split(participant, "p")[[1]][2])) %>%
+  mutate(participant = as.numeric(gsub("p", "", participant)),
+         age = as.numeric(age)) %>%
   mutate(age_group = case_when(
-    age == 4 | age == 5 ~ "4-5-year-olds",
-    age == 6 | age == 7 ~ "6-7-year-olds",
-    age == 8 | age == 9 ~ "8-9-year-olds",
-    age == 10 ~ "older"
-  ))
+    age %in% 4:5 ~ "4-5-year-olds",
+    age %in% 6:7 ~ "6-7-year-olds",
+    age %in% 8:9 ~ "8-9-year-olds",
+    age == 10 ~ "older"))
+
+test_data <- joined_data %>%
+  filter(type == "test") 
+
+practice_data <- joined_data %>%
+  filter(type == "practice")
 ```
 
 # Overall Effect
 
-```{r}
+```{r overall}
 data_overall <- test_data %>% 
   group_by(word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm = T))
@@ -71,6 +76,11 @@ ggplot(data_overall, aes(x = aoa, y = judgment,
   ylab("Kid Judgments")
 ```
 
+```{r ball-judgment}
+ggplot(practice_data, aes(x = as.factor(age), y = judgment)) + 
+  geom_boxplot() +
+  labs(x = "age", y = "ball judgment")
+```
 
 # Each participant's judgments
 
@@ -109,17 +119,29 @@ tmp %>%
 
 ```{r, fig.height = 6, fig.width = 9}
 data_by_age <- test_data %>% 
-  group_by(age_group, word, aoa) %>%
+  group_by(age, word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm=T))
 
-ggplot(data_by_age, aes(x = aoa, y = judgment, group = age_group,
+ggplot(data_by_age, aes(x = aoa, y = judgment, group = age,
                       label = word)) + 
   geom_label_repel() + 
   geom_smooth(method = "lm") + 
-  facet_grid(.~age_group)
+  facet_grid(.~age)
 ```
 
+Estimate correlation between judgments and Kuperman for each age group
+```{r age-cor}
+age_correlations <- test_data %>%
+  group_by(age, participant) %>%
+  nest() %>%
+  mutate(cor = map(data, ~cor(.x$aoa, .x$judgment, use = "complete"))) %>%
+  select(-data) %>%
+  unnest(cols = c(cor)) %>%
+  group_by(age) %>%
+  tidyboot_mean(cor)
 
+kable(age_correlations)
+```
 
   
 # Model
