@@ -80,6 +80,13 @@ ggplot(data_overall, aes(x = aoa, y = judgment,
 ggplot(practice_data, aes(x = as.factor(age), y = judgment)) + 
   geom_boxplot() +
   labs(x = "age", y = "ball judgment")
+
+hard_data <- joined_data %>%
+  filter(word %in% c("leopard", "lobster", "raccoon"))
+
+ggplot(hard_data, aes(x = as.factor(age), y = judgment)) + 
+  geom_boxplot() +
+  labs(x = "age", y = "hardest judgment")
 ```
 
 # Each participant's judgments
@@ -115,7 +122,7 @@ tmp %>%
 ```
 
 
-# Averages by age group (4-5, 6-7, 8-9)
+# Averages by age
 
 ```{r, fig.height = 6, fig.width = 9}
 data_by_age <- test_data %>% 
@@ -124,9 +131,17 @@ data_by_age <- test_data %>%
 
 ggplot(data_by_age, aes(x = aoa, y = judgment, group = age,
                       label = word)) + 
-  geom_label_repel() + 
+  geom_label_repel() +
   geom_smooth(method = "lm") + 
   facet_grid(.~age)
+
+ggplot(test_data, aes(x = aoa, y = judgment, group = age,
+                      label = word)) + 
+  geom_smooth(method = "lm",  se = F, aes(group = participant), alpha = .5, color = "grey") + 
+  geom_point(color = "grey", alpha = .5) +
+  geom_smooth(method = "lm") +
+  facet_grid(.~age) +
+  coord_cartesian(ylim = c(1,6))
 ```
 
 Estimate correlation between judgments and Kuperman for each age group
