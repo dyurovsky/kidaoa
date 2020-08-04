@@ -156,6 +156,12 @@ age_correlations <- test_data %>%
   tidyboot_mean(cor)
 
 kable(age_correlations)
+
+age_correlations %>%
+  ggplot(aes(x = age, y = empirical_stat)) +
+  geom_point() +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_hline(yintercept = 0, linetype = "dashed")
 ```
 
   
@@ -163,8 +169,13 @@ kable(age_correlations)
 
 ```{r model}
 model <- test_data %>%
-  mutate(centered_judgment = judgment - 3.5) %>%
+  # mutate(centered_judgment = judgment - 3.5) %>%
   lm(judgment ~ aoa * age + h, data = .)
 
 tidy(model) 
+
+model <- test_data %>%
+  lmer(judgment ~ aoa * age + (1|participant), data = .)
+
+summary(model) 
 ```
