@@ -4,11 +4,11 @@ author: "Ashley Leung, Ben Morris, and Dan Yurovsky"
 date: '`r Sys.Date()`'
 output: 
   html_document:
-  toc: false
-number_sections: false
-theme: lumen
-toc_float: false
-code_folding: hide
+    toc: false
+    number_sections: false
+    theme: lumen
+    toc_float: false
+    code_folding: hide
 ---
 
 ```{r load-libraries, warning = F, message = F}
@@ -23,21 +23,29 @@ library(lmerTest)
 library(broom)
 library(broom.mixed)
 library(tidyboot)
+library(ggthemes)
+library(effectsize)
+library(papaja)
 
-theme_set(theme_classic(base_size = 14))
+theme_set(theme_few(base_size = 14))
+
+opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+               error = FALSE, cache = TRUE, tidy = FALSE)
 ```
 
 ```{r load-data,, warning = F, message = F}
 #adjust this total n to grab all the participants data below
 n <- 19
 
-pilot_data <- read_csv(here("pilot_data/pilot_data.csv")) %>%
+pilot_data <- read_csv(here("pilot_data/pilot_data.csv"), col_names = FALSE) %>%
+  t() %>%
+  as_tibble() %>%
+  row_to_names(1) %>%
   clean_names() %>%
-  pivot_longer(cols = paste("p", seq(1:n), sep=''), names_to = "participant") %>%
-  pivot_wider(names_from = subject_number, values_from = value) %>%
   pivot_longer(cols = ball:penguin, names_to = "word", values_to = "judgment") %>%
   mutate(type = if_else(word == "ball", "practice", "test"),
-         judgment = as.numeric(judgment))
+         judgment = as.numeric(judgment)) %>%
+  rename(participant = subject_number)
 
 kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 ```
@@ -46,8 +54,7 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 ```{r plot-pilot-data}
 joined_data <- pilot_data %>%
   left_join(kuperman_aoas, by = "word") %>%
-  mutate(participant = as.numeric(gsub("p", "", participant)),
-         age = as.numeric(age)) %>%
+  mutate(age = as.numeric(age)) %>%
   mutate(age_group = case_when(
     age %in% 4:5 ~ "4-5-year-olds",
     age %in% 6:7 ~ "6-7-year-olds",
@@ -118,9 +125,9 @@ tmp %>%
   geom_smooth(method = "lm") + 
   facet_grid(age_group ~ within_age_subj) +
   ggtitle("Individual Participant's Judgments, split by age groups") +
-  coord_cartesian(ylim= c(0,7))
+  coord_cartesian(ylim= c(0,7)) + 
+  theme(legend.position = "none")
 ```
-
 
 # Averages by age
 
@@ -165,17 +172,50 @@ age_correlations %>%
 ```
 
   
-# Model
+# Overall Model
 
 ```{r model}
-model <- test_data %>%
-  # mutate(centered_judgment = judgment - 3.5) %>%
-  lm(judgment ~ aoa * age + h, data = .)
+model_data <- test_data %>%
+  filter(age_group != "older") %>%
+  mutate(age_group = factor(age_group, 
+                           levels = c("4-5-year-olds", "6-7-year-olds", 
+                                      "8-9-year-olds")),
+         age_group_numeric = as.numeric(age_group) -2 )
 
-tidy(model) 
+model <- model_data %>%
+  lmer(judgment ~ aoa * age_group_numeric + (1|participant) + (1|word),
+       data = .) %>%
+  tidy() %>%
+  filter(effect == "fixed") %>%
+  mutate(d = t_to_d(statistic, df)$d,
+         d_low = t_to_d(statistic, df)$CI_low,
+         d_high = t_to_d(statistic, df)$CI_high) %>%
+  select(-effect, -group, -std.error) %>%
+  mutate(p.value = printp(p.value))
 
-model <- test_data %>%
-  lmer(judgment ~ aoa * age + (1|participant), data = .)
+kable(model)
 
-summary(model) 
 ```
+
+
+# Age Models
+```{r age-model}
+age_model <- model_data %>%
+  group_by(age_group) %>%
+  nest() %>%
+  mutate(model = map(data, ~lmer(judgment ~ aoa + (1|participant) + (1|word),
+                                 data = .) %>% tidy())) %>%
+  select(-data) %>%
+  unnest(cols = c(model)) %>%
+  filter(effect == "fixed", term != "(Intercept)") %>%
+  mutate(d = t_to_d(statistic, df)$d,
+         d_low = t_to_d(statistic, df)$CI_low,
+         d_high = t_to_d(statistic, df)$CI_high) %>%
+  select(-effect, -group, -std.error, -term) %>%
+  mutate(p.value = printp(p.value))
+
+kable(age_model)
+
+```
+
+
