@@ -682,10 +682,12 @@ kable(age_correlations)</code></pre>
   mutate(age_group = factor(age_group, 
                            levels = c(&quot;4-5-year-olds&quot;, &quot;6-7-year-olds&quot;, 
                                       &quot;8-9-year-olds&quot;)),
-         age_group_numeric = as.numeric(age_group) -2 )
+         age_group_numeric = as.numeric(age_group)- 2) %&gt;%
+  mutate(aoa_std = scale(aoa),
+         judgment_std = scale(judgment))
 
 model &lt;- model_data %&gt;%
-  lmer(judgment ~ aoa * age_group_numeric + (1|participant) + (1|word),
+  lmer(judgment_std ~ aoa_std * age_group_numeric + (aoa_std | participant) + (1 | word),
        data = .) %&gt;%
   tidy() %&gt;%
   filter(effect == &quot;fixed&quot;) %&gt;%
@@ -698,10 +700,10 @@ model &lt;- model_data %&gt;%
 kable(model)</code></pre>
 <table>
 <colgroup>
-<col width="23%"></col>
+<col width="26%"></col>
 <col width="11%"></col>
-<col width="10%"></col>
-<col width="10%"></col>
+<col width="11%"></col>
+<col width="9%"></col>
 <col width="8%"></col>
 <col width="11%"></col>
 <col width="11%"></col>
@@ -722,43 +724,43 @@ kable(model)</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">6.2426282</td>
-<td align="right">6.988556</td>
-<td align="right">13.34781</td>
-<td align="left">&lt; .001</td>
-<td align="right">3.8257140</td>
-<td align="right">2.0082299</td>
-<td align="right">5.5923025</td>
+<td align="right">0.0081050</td>
+<td align="right">0.0637955</td>
+<td align="right">17.42420</td>
+<td align="left">.950</td>
+<td align="right">0.0305664</td>
+<td align="right">-0.9090009</td>
+<td align="right">0.9692631</td>
 </tr>
 <tr class="even">
-<td align="left">aoa</td>
-<td align="right">-0.5075618</td>
-<td align="right">-2.976439</td>
-<td align="right">13.01094</td>
-<td align="left">.011</td>
-<td align="right">-1.6503370</td>
-<td align="right">-2.8817392</td>
-<td align="right">-0.3718118</td>
+<td align="left">aoa_std</td>
+<td align="right">-0.3369320</td>
+<td align="right">-2.8948457</td>
+<td align="right">13.87986</td>
+<td align="left">.012</td>
+<td align="right">-1.5540423</td>
+<td align="right">-2.7305081</td>
+<td align="right">-0.3347155</td>
 </tr>
 <tr class="odd">
 <td align="left">age_group_numeric</td>
-<td align="right">1.6631157</td>
-<td align="right">2.971339</td>
-<td align="right">227.73280</td>
-<td align="left">.003</td>
-<td align="right">0.3937943</td>
-<td align="right">0.1311115</td>
-<td align="right">0.6556286</td>
+<td align="right">-0.0469837</td>
+<td align="right">-0.4537540</td>
+<td align="right">16.68629</td>
+<td align="left">.656</td>
+<td align="right">-0.2221624</td>
+<td align="right">-1.1814078</td>
+<td align="right">0.7436475</td>
 </tr>
 <tr class="even">
-<td align="left">aoa:age_group_numeric</td>
-<td align="right">-0.3484555</td>
-<td align="right">-3.328725</td>
-<td align="right">230.51238</td>
-<td align="left">.001</td>
-<td align="right">-0.4384911</td>
-<td align="right">-0.6992922</td>
-<td align="right">-0.1767605</td>
+<td align="left">aoa_std:age_group_numeric</td>
+<td align="right">-0.2352470</td>
+<td align="right">-3.0612360</td>
+<td align="right">30.66159</td>
+<td align="left">.005</td>
+<td align="right">-1.1056800</td>
+<td align="right">-1.8575089</td>
+<td align="right">-0.3381824</td>
 </tr>
 </tbody>
 </table>
@@ -833,6 +835,43 @@ kable(age_model)</code></pre>
 <td align="right">-1.4995371</td>
 <td align="right">-2.7049446</td>
 <td align="right">-0.2493289</td>
+</tr>
+</tbody>
+</table>
+<p>correlation models</p>
+<pre class="r"><code>kid_correlations &lt;- model_data %&gt;%
+  group_by(age_group_numeric, age, participant) %&gt;%
+  summarise(correlation = cor(aoa, judgment, use = &quot;complete&quot;),
+            r2 = correlation^2)
+
+cor_model &lt;- lm(r2 ~ age_group_numeric, data = kid_correlations) %&gt;%
+  tidy()
+
+kable(cor_model)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.1762863</td>
+<td align="right">0.0303144</td>
+<td align="right">5.815273</td>
+<td align="right">0.0000263</td>
+</tr>
+<tr class="even">
+<td align="left">age_group_numeric</td>
+<td align="right">0.1165102</td>
+<td align="right">0.0406710</td>
+<td align="right">2.864699</td>
+<td align="right">0.0112339</td>
 </tr>
 </tbody>
 </table>

@@ -1,0 +1,172 @@
+---
+title: "Kid AoA experiment analysis"
+author: "Ashley Leung, Ben Morris, and Dan Yurovsky"
+date: '`r Sys.Date()`'
+output: 
+  html_document:
+    toc: false
+    number_sections: false
+    theme: lumen
+    toc_float: false
+    code_folding: hide
+---
+
+```{r load-libraries, warning = F, message = F}
+library(here)
+library(knitr)
+library(janitor)
+library(ggthemes)
+library(tidyverse)
+library(ggrepel)
+library(lme4)
+library(lmerTest)
+library(broom)
+library(broom.mixed)
+library(tidyboot)
+library(ggthemes)
+library(effectsize)
+library(papaja)
+library(glue)
+
+theme_set(theme_few(base_size = 14))
+
+opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, 
+               error = FALSE, cache = TRUE, tidy = FALSE)
+```
+
+```{r load-data,, warning = F, message = F}
+#adjust this total n to grab all the participants data below
+n <- 19
+
+items <- c("ball", "artichoke", "cat", "dog", "duck", "elephant", "gorilla", 
+           "leopard", "lobster", "owl", "pig", "raccoon", "turtle", "zebra", 
+           "snake", "fish", "penguin", "car", "stairs")
+
+mutated_items <- map(items, ~c(glue("{.x}_yes"), glue("{.x}_no"))) %>%
+  unlist()
+
+
+
+data <- read_csv(here("kid_data/AoA kids FINAL_September 28, 2020_13.55.csv")) %>%
+  slice(2:n()) %>%
+  filter(Finished == "True") %>%
+  select(-StartDate:-UserLanguage) %>%
+  filter(!is.na(Q60)) %>%
+  rename(age = Q59, gender = Q60) %>%
+  select(age, gender, all_of(mutated_items)) %>%
+  mutate(id = row_number())%>%
+  pivot_longer(cols = all_of(mutated_items), names_to = "item", 
+               values_to = "judgment") %>%
+  rowwise() %>%
+  mutate(item = str_split(item, "_",simplify = TRUE)[1]) %>%
+  group_by(age, gender, id, item) %>%
+  mutate(judgment = as.numeric(judgment)) %>%
+  summarise(judgment = mean(judgment, na.rm = TRUE))
+
+word_data <- data %>%
+  filter(!item %in% c("artichoke", "ball", "car", "stairs")) %>%
+  rename(word = item)
+
+
+kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
+```
+
+
+```{r plot-pilot-data}
+joined_data <- word_data %>%
+  left_join(kuperman_aoas, by = "word") %>%
+  mutate(age_group = case_when(
+    age %in% 4:5 ~ "4-5-year-olds",
+    age %in% 6:7 ~ "6-7-year-olds",
+    age %in% 8:9 ~ "8-9-year-olds",
+    age == 10 ~ "older"))
+```
+
+# Overall Effect
+
+```{r overall}
+data_overall <- joined_data %>% 
+  group_by(word, aoa) %>%
+  summarize(judgment = mean(judgment, na.rm = T))
+
+ggplot(data_overall, aes(x = aoa, y = judgment,
+                      label = word)) + 
+  geom_smooth(method = "lm") +
+  geom_label_repel() + 
+  xlab("Kuperman AoA estimates (adults)") +
+  ylab("Kid Judgments")
+```
+
+```{r ball-judgment, eval = FALSE}
+ggplot(practice_data, aes(x = as.factor(age), y = judgment)) + 
+  geom_boxplot() +
+  labs(x = "age", y = "ball judgment")
+
+hard_data <- joined_data %>%
+  filter(word %in% c("leopard", "lobster", "raccoon"))
+
+ggplot(hard_data, aes(x = as.factor(age), y = judgment)) + 
+  geom_boxplot() +
+  labs(x = "age", y = "hardest judgment")
+```
+
+# Averages by age
+
+```{r, fig.height = 6, fig.width = 9}
+data_by_age <- joined_data %>% 
+  group_by(age, word, aoa) %>%
+  summarize(judgment = mean(judgment, na.rm=T))
+
+ggplot(data_by_age, aes(x = aoa, y = judgment, group = age,
+                      label = word)) + 
+  geom_label_repel() +
+  geom_smooth(method = "lm") + 
+  facet_grid(.~age)
+
+```
+
+Estimate correlation between judgments and Kuperman for each age group
+```{r age-cor}
+age_correlations <- joined_data %>%
+  filter(!(age == 6 & id == 4)) %>%
+  group_by(age, id) %>%
+  nest() %>%
+  mutate(cor = map(data, ~cor(.x$aoa, .x$judgment, use = "complete"))) %>%
+  select(-data) %>%
+  unnest(cols = c(cor)) %>%
+  group_by(age) %>%
+  tidyboot_mean(cor)
+
+kable(age_correlations)
+
+age_correlations %>%
+  ggplot(aes(x = age, y = empirical_stat)) +
+  geom_point() +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_hline(yintercept = 0, linetype = "dashed")
+```
+
+  
+# Overall Model
+
+```{r model}
+model_data <- joined_data %>%
+  mutate(age = as.numeric(age),
+         aoa_std = scale(aoa),
+         judgment_std = scale(judgment))
+
+model <- model_data %>%
+  lmer(judgment ~ aoa * age + (1 | id) + (1|word),
+       data = .) %>%
+  tidy() %>%
+  filter(effect == "fixed") %>%
+  mutate(d = t_to_d(statistic, df)$d,
+         d_low = t_to_d(statistic, df)$CI_low,
+         d_high = t_to_d(statistic, df)$CI_high) %>%
+  select(-effect, -group, -std.error) %>%
+  mutate(p.value = printp(p.value))
+
+kable(model)
+
+```
+

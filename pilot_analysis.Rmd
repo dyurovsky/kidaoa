@@ -174,16 +174,25 @@ age_correlations %>%
   
 # Overall Model
 
+```{r fixed}
+
+model <- model_data %>%
+  lm(judgment_std ~ aoa_std * age_group_numeric,
+       data = .) 
+```
+
 ```{r model}
 model_data <- test_data %>%
   filter(age_group != "older") %>%
   mutate(age_group = factor(age_group, 
                            levels = c("4-5-year-olds", "6-7-year-olds", 
                                       "8-9-year-olds")),
-         age_group_numeric = as.numeric(age_group) -2 )
+         age_group_numeric = as.numeric(age_group)- 2) %>%
+  mutate(aoa_std = scale(aoa),
+         judgment_std = scale(judgment))
 
 model <- model_data %>%
-  lmer(judgment ~ aoa * age_group_numeric + (1|participant) + (1|word),
+  lmer(judgment_std ~ aoa_std * age_group_numeric + (aoa_std | participant) + (1 | word),
        data = .) %>%
   tidy() %>%
   filter(effect == "fixed") %>%
@@ -218,4 +227,17 @@ kable(age_model)
 
 ```
 
+correlation models
+```{r corrleation_model}
+kid_correlations <- model_data %>%
+  group_by(age_group_numeric, age, participant) %>%
+  summarise(correlation = cor(aoa, judgment, use = "complete"),
+            r2 = correlation^2)
+
+cor_model <- lm(correlation ~ age_group_numeric, data = kid_correlations) %>%
+  tidy()
+
+kable(cor_model)
+
+```
 
