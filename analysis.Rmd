@@ -47,14 +47,14 @@ mutated_items <- map(items, ~c(glue("{.x}_yes"), glue("{.x}_no"))) %>%
 
 
 
-data <- read_csv(here("kid_data/AoA kids FINAL_September 28, 2020_13.55.csv")) %>%
+data <- read_csv(here("kid_data/kid_qualtrics_raw_final.csv")) %>%
   slice(2:n()) %>%
   filter(Finished == "True") %>%
   select(-StartDate:-UserLanguage) %>%
   filter(!is.na(Q60)) %>%
   rename(age = Q59, gender = Q60) %>%
   select(age, gender, all_of(mutated_items)) %>%
-  mutate(id = row_number())%>%
+  mutate(id = row_number()) %>%
   pivot_longer(cols = all_of(mutated_items), names_to = "item", 
                values_to = "judgment") %>%
   rowwise() %>%
@@ -67,13 +67,34 @@ word_data <- data %>%
   filter(!item %in% c("artichoke", "ball", "car", "stairs")) %>%
   rename(word = item)
 
+practice_data <- data %>%
+  filter(item %in% c("artichoke", "ball", "car", "stairs")) %>%
+  rename(word = item) %>%
+  filter(!is.na(judgment))
 
 kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
+```
+
+```{r}
+#to drop for not answering every question
+toDrop <- data %>% 
+  filter(is.na(judgment)) %>%
+  distinct(id, age)
+
+toDrop
+
+#remaining subs to collect
+data %>% distinct(age, id) %>% ungroup() %>% 
+  filter(!id %in% (toDrop %>% pull(id))) %>%
+  count(age) %>%
+  mutate(remaining = 12 - n)
+
 ```
 
 
 ```{r plot-pilot-data}
 joined_data <- word_data %>%
+  filter(!id %in% (toDrop %>% pull(id))) %>%
   left_join(kuperman_aoas, by = "word") %>%
   mutate(age_group = case_when(
     age %in% 4:5 ~ "4-5-year-olds",
@@ -94,21 +115,10 @@ ggplot(data_overall, aes(x = aoa, y = judgment,
   geom_smooth(method = "lm") +
   geom_label_repel() + 
   xlab("Kuperman AoA estimates (adults)") +
-  ylab("Kid Judgments")
+  ylab("Kid Judgments") +
+  scale_y_continuous(breaks = c(1:6), limit = c(1,6))
 ```
 
-```{r ball-judgment, eval = FALSE}
-ggplot(practice_data, aes(x = as.factor(age), y = judgment)) + 
-  geom_boxplot() +
-  labs(x = "age", y = "ball judgment")
-
-hard_data <- joined_data %>%
-  filter(word %in% c("leopard", "lobster", "raccoon"))
-
-ggplot(hard_data, aes(x = as.factor(age), y = judgment)) + 
-  geom_boxplot() +
-  labs(x = "age", y = "hardest judgment")
-```
 
 # Averages by age
 
@@ -121,14 +131,15 @@ ggplot(data_by_age, aes(x = aoa, y = judgment, group = age,
                       label = word)) + 
   geom_label_repel() +
   geom_smooth(method = "lm") + 
-  facet_grid(.~age)
-
+  facet_grid(.~age) + 
+  xlab("Kuperman AoA estimates (adults)") +
+  ylab("Kid Judgments") +
+  scale_y_continuous(breaks = c(1:6))
 ```
 
 Estimate correlation between judgments and Kuperman for each age group
 ```{r age-cor}
 age_correlations <- joined_data %>%
-  filter(!(age == 6 & id == 4)) %>%
   group_by(age, id) %>%
   nest() %>%
   mutate(cor = map(data, ~cor(.x$aoa, .x$judgment, use = "complete"))) %>%
@@ -151,7 +162,8 @@ age_correlations %>%
 
 ```{r model}
 model_data <- joined_data %>%
-  mutate(age = as.numeric(age),
+  ungroup() %>%
+  mutate(age = scale(as.numeric(age), scale = F),
          aoa_std = scale(aoa),
          judgment_std = scale(judgment))
 
@@ -168,5 +180,46 @@ model <- model_data %>%
 
 kable(model)
 
+```
+
+```{r}
+summary(lmer(judgment ~ aoa + (1 | id) + (1 | word), data = model_data %>% filter(age_group == "8-9-year-olds")))
+```
+
+
+
+
+#### Individuals but ordered by age (group)
+
+```{r, fig.height = 8, fig.width = 10}
+within_age_subj <- joined_data %>%
+  group_by(age) %>%
+  distinct(id) %>%
+  mutate(within_age_subj = seq(n()))
+
+tmp <- left_join(joined_data, within_age_subj, by=c('id', 'age'))
+  
+tmp %>%
+  filter(within_age_subj <= 12) %>%
+  ggplot(aes(x = aoa, y = judgment, group = age, color = age,
+                      label = word)) + 
+  geom_point(aes(alpha = .2)) +
+  geom_smooth(method = "lm") + 
+  facet_grid(age ~ within_age_subj) +
+  ggtitle("Individual Participant's Judgments, by Age") +
+  coord_cartesian(ylim= c(0,7)) + 
+  theme(legend.position = "none") +
+  xlab("Kuperman AoA estimates (adults)") +
+  ylab("Kid Judgments") +
+  scale_y_continuous(breaks = c(seq(1,6,2)), limit = c(1,6))
+```
+
+
+```{r ball-judgment, eval = FALSE}
+ggplot(practice_data, aes(x = as.factor(age), y = judgment)) + 
+  geom_boxplot() +
+  geom_point() +
+  labs(x = "age", y = "ball judgment") +
+  facet_wrap(~word)
 ```
 
