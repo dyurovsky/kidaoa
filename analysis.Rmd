@@ -110,10 +110,13 @@ data_overall <- joined_data %>%
   group_by(word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm = T))
 
-ggplot(data_overall, aes(x = aoa, y = judgment,
+#use the raw data to make line and variability
+   #points show averages
+ggplot(joined_data, aes(x = aoa, y = judgment,
                       label = word)) + 
+  # geom_jitter() +
   geom_smooth(method = "lm") +
-  geom_label_repel() + 
+  geom_label_repel(data = data_overall) +
   xlab("Kuperman AoA estimates (adults)") +
   ylab("Kid Judgments") +
   scale_y_continuous(breaks = c(1:6), limit = c(1,6))
@@ -124,39 +127,46 @@ ggplot(data_overall, aes(x = aoa, y = judgment,
 
 ```{r, fig.height = 6, fig.width = 9}
 data_by_age <- joined_data %>% 
+  mutate(word = substr(word, 0, 3)) %>%
   group_by(age, word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm=T))
 
-ggplot(data_by_age, aes(x = aoa, y = judgment, group = age,
+#use the raw data to make line and variability
+   #points show averages by age
+ggplot(joined_data, aes(x = aoa, y = judgment, group = age,
                       label = word)) + 
-  geom_label_repel() +
-  geom_smooth(method = "lm") + 
+  # # if we want to add raw data
+  # geom_jitter(color = "grey" , alpha = .5) +
+  geom_smooth(method = "lm") +
+  geom_point(data = data_by_age) +
+  # a bit hard to see on this plot if we use labels, suggest we use regular points instead
+  # geom_label_repel(data = data_by_age, point.padding = 0, 
+        # label.padding = .15, label.size = .1) +
   facet_grid(.~age) + 
   xlab("Kuperman AoA estimates (adults)") +
   ylab("Kid Judgments") +
+  coord_cartesian(ylim = c(0,7)) +
   scale_y_continuous(breaks = c(1:6))
 ```
 
-Estimate correlation between judgments and Kuperman for each age group
-```{r age-cor}
-age_correlations <- joined_data %>%
-  group_by(age, id) %>%
-  nest() %>%
-  mutate(cor = map(data, ~cor(.x$aoa, .x$judgment, use = "complete"))) %>%
-  select(-data) %>%
-  unnest(cols = c(cor)) %>%
-  group_by(age) %>%
-  tidyboot_mean(cor)
+### Plot word-level ratings, by age (ordered by AoA)
 
-kable(age_correlations)
+```{r overall}
+ordered_words <- c("dog", "duck", "cat", "pig", "fish", "turtle", "zebra", "elephant", "snake", "penguin", "gorilla", "owl", "raccoon", "leopard", "lobster")
 
-age_correlations %>%
-  ggplot(aes(x = age, y = empirical_stat)) +
-  geom_point() +
-  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
-  geom_hline(yintercept = 0, linetype = "dashed")
+data_by_age_boot <- joined_data %>% 
+  mutate(word = factor(word, levels = ordered_words)) %>%
+  group_by(age, word, aoa) %>%
+  tidyboot_mean(judgment)
+
+ggplot(data_by_age_boot, aes(x = age, y = empirical_stat,
+                             ymax = ci_upper, ymin = ci_lower)) + 
+  geom_pointrange(size = .25) + 
+  facet_wrap(.~word, nrow = 1) +
+  xlab("Age") +
+  ylab("Knowledge Rating") +
+  scale_y_continuous(breaks = c(1:6))
 ```
-
   
 # Overall Model
 
@@ -183,7 +193,7 @@ kable(model)
 ```
 
 ```{r}
-summary(lmer(judgment ~ aoa + (1 | id) + (1 | word), data = model_data %>% filter(age_group == "8-9-year-olds")))
+summary(lmer(judgment ~ aoa + (1 | id) + (1 | word), data = joined_data %>% filter(age == 4)))
 ```
 
 
@@ -200,7 +210,7 @@ within_age_subj <- joined_data %>%
 tmp <- left_join(joined_data, within_age_subj, by=c('id', 'age'))
   
 tmp %>%
-  filter(within_age_subj <= 12) %>%
+  filter(within_age_subj <= 7) %>%
   ggplot(aes(x = aoa, y = judgment, group = age, color = age,
                       label = word)) + 
   geom_point(aes(alpha = .2)) +
@@ -215,11 +225,57 @@ tmp %>%
 ```
 
 
+# Additional Checks
+
 ```{r ball-judgment, eval = FALSE}
 ggplot(practice_data, aes(x = as.factor(age), y = judgment)) + 
   geom_boxplot() +
   geom_point() +
   labs(x = "age", y = "ball judgment") +
   facet_wrap(~word)
+```
+
+
+```{r}
+#12.11.2020 
+ # tmp check looking at overall differences in estimating sams knowledge
+tmp2 <- joined_data %>%
+  #binarize, did they say yes or no
+  mutate(known = if_else(judgment >= 4, 1, 0)) %>%
+  group_by(age, id) %>%
+  count(known) %>%
+  group_by(age) %>%
+  #how many of the 15 words they think sam knows
+  tidyboot_mean(n)
+
+#we don't see any real change in overall number of words they say sam knows
+# about 7.5 throughout, more variability with younger kids
+ggplot(tmp2, aes(x = age, y = empirical_stat, group = age, ymax = ci_upper, ymin = ci_lower)) + 
+  geom_bar(stat = "identity") +
+  geom_linerange() +
+  xlab("Child Age") +
+  ylab("Mean Knowledge Judgment")
+```
+
+
+Estimate correlation between judgments and Kuperman for each age group
+
+```{r age-cor}
+age_correlations <- joined_data %>%
+  group_by(age, id) %>%
+  nest() %>%
+  mutate(cor = map(data, ~cor(.x$aoa, .x$judgment, use = "complete"))) %>%
+  select(-data) %>%
+  unnest(cols = c(cor)) %>%
+  group_by(age) %>%
+  tidyboot_mean(cor)
+
+kable(age_correlations)
+
+age_correlations %>%
+  ggplot(aes(x = age, y = empirical_stat)) +
+  geom_point() +
+  geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
+  geom_hline(yintercept = 0, linetype = "dashed")
 ```
 
