@@ -66,9 +66,15 @@ In this study, we ask whether children have accurate estimates of other children
 
 To our knowledge, only one study has asked children to give AoA estimates for English words [@walley1992]. In their study, Walley and Metsala [-@walley1992] used a broad set of words acquired over a large range of ages (from table to valet) to investigate young children’s general metalinguistic knowledge. As young as age 5, children generated AoA estimates that were similar to adults’. Our study builds on Walley and Metsala’s [-@walley1992] work to collect more sensitive AoA estimates in a single domain (animal words). To probe the specificity and sensitivity of children’s AoA estimates, the animal words we use in this study are generally acquired within a narrow age range of 2 to 2.5, based on parent reports of children’s vocabulary (Wordbank). Our study also differs from Walley and Metsala’s [-@walley1992] in a crucial way--rather than asking children when they themselves learned a word, we ask them to estimate the vocabulary knowledge of another child. This framing also allowed us to not ask children the age at which they learned a word, but instead their certainty about the other child’s knowledge. Lastly, our study also probes whether children as young as 4 might show this capacity to reason about another child’s lexical knowledge.
 
-In the current study, children ages 4-8 were introduced to a younger fictional child, and asked to make judgments about this child’s knowledge of various animal words. We expected that overall, children’s judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the child is most likely to know early acquired words, yielding a negative correlation between their judgments of lexical knowledge and adult AoA estimates. We expect developmental change in children’s sensitivity to Sam’s vocabulary knowledge, with older children’s judgments recovering word-level AoA data more closely.
+In the current study, children ages 4-8 were introduced to a younger fictional child, and asked to make judgments about this child’s knowledge of various animal words. We expected that overall, children’s judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the child is most likely to know early acquired words, yielding a negative relationship between their judgments of lexical knowledge and adult AoA estimates. We expect developmental change in children’s sensitivity to Sam’s vocabulary knowledge, with older children’s judgments recovering word-level AoA data more closely.
 
 # Method
+
+```{r}
+kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1)
+
+kid_n <- kidaoa_data %>% filter(age != "adult") %>% distinct(id) %>% nrow(.)
+```
 
 #### Stimuli
 
@@ -76,7 +82,7 @@ Our stimuli consisted of 15 words drawn from a single domain (animal words), alo
 
 Participants
 
-We pre-registered a planned sample of 60 children ages 4-8, with 12 children recruited for each year-wise age group. Due to overrecruitment, our final sample included 65 children (12 4-year-olds, 13 5-year-olds, 13 6-year-olds, 12 7-year-olds, 15 8-year-olds). All analyses hold when looking only at the 60 children run first chronologically. Based on our pre-registered exclusion criterion, children who failed to answer all of the questions were excluded and replaced (an additional 7 children). Families were recruited online, primarily through a US University database of families who have expressed interested in doing research or previously participated. Children completed this study over Zoom, interacting with a live experimenter who navigated a slide-style, animated Qualtrics survey.
+We pre-registered a planned sample of 60 children ages 4-8, with 12 children recruited for each year-wise age group. Due to overrecruitment, our final sample included 62 children (12 4-year-olds, 13 5-year-olds, 13 6-year-olds, 12 7-year-olds, 12 8-year-olds). All analyses hold when looking only at the 60 children run first chronologically. Based on our pre-registered exclusion criterion, children who failed to answer all of the questions were excluded and replaced (an additional 7 children). Families were recruited online, primarily through a US University database of families who have expressed interested in doing research or previously participated. Children completed this study over Zoom, interacting with a live experimenter who navigated a slide-style, animated Qualtrics survey.
 
 
 ### Procedure
@@ -94,17 +100,14 @@ The experimenter provided no evaluative feedback on any trials, but did offer co
 
 *Familiarization trials.* Children first completed two non-animal familiarization trials, one of an early-acquired word (ball) and one of a late-acquired word (artichoke). These trials followed the trial structure described above and were intended to help familiarize children with the structure of the questions and scales. These trials were always asked first and in a fixed order.
 
-*Animal trials.* Children were then shown 15 trials of the same form for various familiar animals. For the 15 animal trials, trial order was randomized across participants to control for any potential order effects in children’s responses.
+*Animal trials.* Children were then shown 15 trials of the same form (see example trial in Figure \ref{fig:task-method}). For the 15 animal trials, trial order was randomized across participants to control for any potential order effects in children’s responses.
 
 *Explanation.* After completing the final animal trial, children were asked an open-ended explanation question about their final judgement (e.g., “Why do you think Sam [knows/doesn’t know] that this is called [an elephant]?”). Because the trial order was randomized, the explanations concerned different animal words across participants.
 
-*Final check questions.* Children were asked whether they think Sam knows how to do two tasks: going up and down stairs and driving a car. These questions again followed the general trial structure described above. These trials were included as an additional check in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children’s belief about Sam. Sam’s photo and skill knowledge were intended to indicate toddlerhood.
+*Final check questions.* Children were asked two questions about Sam's skill knowledge, one early acquired skill (going up and down stairs) and one very late acquired skill (driving a car). These questions again followed the general trial structure described above. The skill knowledge items were included as an additional check that children at all ages were able to use the scale appropriately, in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children’s belief about Sam. Sam’s photo and skill knowledge were intended to indicate toddlerhood.
 
-```{r}
-kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1)
-```
 
-```{r overall, fig.width = 3.5, fig.cap = 'Correlation between adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows).'}
+```{r overall, fig.width = 3.5, fig.cap = 'Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows).'}
 data_overall <- kidaoa_data %>% 
   # drop the adults, so it's only kids performance average
   filter(age != "adult") %>%
@@ -134,6 +137,7 @@ Do children’s judgments about a child’s vocabulary knowledge reflect a sensi
 
 ```{r model}
 model_data <- kidaoa_data %>%
+  filter(age != "adult") %>%
   ungroup() %>%
   mutate(age = scale(as.numeric(age), scale = F),
          aoa_std = scale(aoa),
@@ -178,7 +182,7 @@ development <- ggplot(kidaoa_data, aes(x = aoa, y = judgment, group = age,
   coord_cartesian(ylim = c(0,7)) +
   scale_y_continuous(breaks = c(1:6))
 
-print(development, fig.align = "center", fig.pos="tb", 
+print(development, fig.align = "center", fig.pos="t", 
       environment = "figure*")
 ```
 
@@ -205,7 +209,7 @@ To test for developmental changes in children’s responses, we used the same mi
 ```{r}
 # effect within each age group
 fours <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 4))) %>% tidy()
-fives <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 5)))
+fives <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 5))) %>% tidy()
 sixes <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 6)))
 sevens <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 7)))
 eights <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 8)))
