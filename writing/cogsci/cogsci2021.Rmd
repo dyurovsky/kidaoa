@@ -32,6 +32,12 @@ library(here)
 library(ggrepel)
 library(lme4)
 library(ggthemes)
+library(broom)
+library(broom.mixed)
+library(effectsize)
+library(papaja)
+library(kableExtra)
+library(lmerTest)
 
 theme_set(theme_few(base_size = 14))
 ```
@@ -41,9 +47,9 @@ theme_set(theme_few(base_size = 14))
 
 When we communicate with other people, we choose our words carefully to transmit information that we think our partner will understand. For instance, we referred to “lexical” knowledge in the title of this paper because it conveys something precise the Cognitive Science Conference audience. But if we were to tell a friend about the work in this paper we would say that “children know what words other children probably know.”
 
-Do you remember when you learned the word dog? What about aardvark? While you might not be able to say the exact age at which you learned these animals, you probably think you learned aardvark after dog. You can probably give reasons for this intuition -- dogs are more common, they are in lots of children’s books, it’s a short word, and so on. Asked to make such judgments, adults are able to recover the order that children actually acquire words (Kuperman et al., 2012). This kind of intuition could help you tune your communication with young children, talking very differently about dogs compared with aardvarks. Do children also have intuitions about when words are learned? If so, these intuitions would reflect significant metalinguistic knowledge, and may even enable them to tune their conversation with others. In this study we ask how children infer another’s lexical knowledge, specifically whether they make item-level predictions about what words a very young child is likely to know.
+Do you remember when you learned the word dog? What about aardvark? While you might not be able to say the exact age at which you learned these animals, you probably think you learned aardvark after dog. You can probably give reasons for this intuition -- dogs are more common, they are in lots of children’s books, it’s a short word, and so on. Asked to make such judgments, adults are able to recover the order that children actually acquire words [@kuperman2012]. This kind of intuition could help you tune your communication with young children, talking very differently about dogs compared with aardvarks. Do children also have intuitions about when words are learned? If so, these intuitions would reflect significant metalinguistic knowledge, and may even enable them to tune their conversation with others. In this study we ask how children infer another’s lexical knowledge, specifically whether they make item-level predictions about what words a very young child is likely to know.
 
-Adults show significant metalinguistic knowledge. In a large-scale study, Kuperman, Stadthagen-Gonzalez, and Brysbaert (2012) asked adult participants to report the age at which they understood a given word and obtained judgments for 30,000 English words. These judgments can then be directly compared with data on the typical age that a given word is actually learned (also called its age of acquisition, hereafter referred to as AoA). While adults typically overestimate the absolute age at which they learned a given word, the estimated order in which words are acquired is mostly intact (Kuperman, et al., 2012). Adults are thus able to make graded and surprisingly accurate relative estimates of when a word was learned.
+Adults show significant metalinguistic knowledge. In a large-scale study, @kuperman2012 asked adult participants to report the age at which they understood a given word and obtained judgments for 30,000 English words. These judgments can then be directly compared with data on the typical age that a given word is actually learned (also called its age of acquisition, hereafter referred to as AoA). While adults typically overestimate the absolute age at which they learned a given word, the estimated order in which words are acquired is mostly intact [@kuperman2012]. Adults are thus able to make graded and surprisingly accurate relative estimates of when a word was learned.
 
 (if we do it in this order, do we need to make a better bridge from AoA to what another agent knows? Like, in order for this skill to be useful in conversation, one must be able to recruit this metalinguistic knowledge to draw on-the-fly inferences about what an interlocutor’s likely lexical knowledge…)
 
@@ -55,9 +61,9 @@ Young children show an impressive ability to track other people’s knowledge ac
 
 [Something about why/how we arrived at lexical knowledge as the thing to study-- maybe the connection to communication? Bridge to our study]
 
-In this study, we ask whether children have accurate estimates of other children’s knowledge. Specifically, we are interested in whether children are sensitive to the specific vocabulary knowledge of younger children and are able to make item-wise predictions. Such predictions are crucial to communicate effectively with various interlocutors and account for varying knowledge and perspectives. By age 5, children are richly structure their language based on a listener’s knowledge, for example offering more generic information to ignorant listeners (Baer & Friedman, 2018). Such studies typically heavily and repeatedly emphasize an interlocutors knowledge state, to test for children’s ability to adapt their communication in the absence of knowledge reasoning. Children’s possible difficulty specific knowledge predictions may hinder their performance in other communication tasks (e.g. Krauss & Glucksberg, 1977). 
+In this study, we ask whether children have accurate estimates of other children’s knowledge. Specifically, we are interested in whether children are sensitive to the specific vocabulary knowledge of younger children and are able to make item-wise predictions. Such predictions are crucial to communicate effectively with various interlocutors and account for varying knowledge and perspectives. By age 5, children are richly structure their language based on a listener’s knowledge, for example offering more generic information to ignorant listeners [@baer2018]. Such studies typically heavily and repeatedly emphasize an interlocutors knowledge state, to test for children’s ability to adapt their communication in the absence of knowledge reasoning. Children’s possible difficulty specific knowledge predictions may hinder their performance in other communication tasks (e.g. @krauss1977). 
 
-To our knowledge, only one study has asked children to give AoA estimates for English words (Walley & Metsala, 1992). In their study, Walley and Metsala (1992) used a broad set of words acquired over a large range of ages (from table to valet) to investigate young children’s general metalinguistic knowledge. As young as age 5, children generated AoA estimates that were similar to adults’. Our study builds on Walley and Metsala’s (1992) work to collect more sensitive AoA estimates in a single domain (animal words). To probe the specificity and sensitivity of children’s AoA estimates, the animal words we use in this study are generally acquired within a narrow age range of 2 to 2.5, based on parent reports of children’s vocabulary (Wordbank). Our study also differs from Walley and Metsala’s (1992) in a crucial way--rather than asking children when they themselves learned a word, we ask them to estimate the vocabulary knowledge of another fictional child. This framing also allowed us to not ask children the age at which they learned a word, but instead their certainty about the other child’s knowledge. Lastly, our study also probes whether children as young as 4 might show this capacity to reason about another child’s lexical knowledge.
+To our knowledge, only one study has asked children to give AoA estimates for English words [@walley1992]. In their study, Walley and Metsala [-@walley1992] used a broad set of words acquired over a large range of ages (from table to valet) to investigate young children’s general metalinguistic knowledge. As young as age 5, children generated AoA estimates that were similar to adults’. Our study builds on Walley and Metsala’s [-@walley1992] work to collect more sensitive AoA estimates in a single domain (animal words). To probe the specificity and sensitivity of children’s AoA estimates, the animal words we use in this study are generally acquired within a narrow age range of 2 to 2.5, based on parent reports of children’s vocabulary (Wordbank). Our study also differs from Walley and Metsala’s [-@walley1992] in a crucial way--rather than asking children when they themselves learned a word, we ask them to estimate the vocabulary knowledge of another fictional child. This framing also allowed us to not ask children the age at which they learned a word, but instead their certainty about the other child’s knowledge. Lastly, our study also probes whether children as young as 4 might show this capacity to reason about another child’s lexical knowledge.
 
 In the current study, children ages 4-8 were introduced to a younger fictional child, and asked to make judgments about this fictional child’s knowledge of various animal words. We expected that overall, children’s judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the child is most likely to know early acquired words, yielding a negative correlation between their judgments of lexical knowledge and adult AoA estimates. We expect developmental change in children’s sensitivity to Sam’s vocabulary knowledge, with older children’s judgments recovering word-level AoA data more closely.
 
@@ -83,15 +89,15 @@ The experimenter provided no evaluative feedback on any trials, but did offer co
 
 *Animal trials.* Children were then shown 15 trials of the same form for various familiar animals. For the 15 animal trials, trial order was randomized across participants to control for any potential order effects in children’s responses.
 
-*Explanation.* After completing the final animal trial, children were asked an open-ended explanation question about their final judgement (e.g., “Why do you think Sam [knows/doesn’t know] that this is called [an elephant]?”).
+*Explanation.* After completing the final animal trial, children were asked an open-ended explanation question about their final judgement (e.g., “Why do you think Sam [knows/doesn’t know] that this is called [an elephant]?”). Because the trial order was randomized, the explanations concerned different animal words across participants.
 
-*Final check questions.* Children were asked whether they think Sam knows how to do two tasks: jumping and driving a car. These questions again followed the general trial structure described above. These trials were included as an additional check in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children’s belief about Sam. Sam’s photo and skill knowledge were intended to indicate toddlerhood.
+*Final check questions.* Children were asked whether they think Sam knows how to do two tasks: going up and down stairs and driving a car. These questions again followed the general trial structure described above. These trials were included as an additional check in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children’s belief about Sam. Sam’s photo and skill knowledge were intended to indicate toddlerhood.
 
 ```{r}
 kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1)
 ```
 
-```{r overall, fig.cap = 'Correlation between adult AoA estimates (in years, taken from Kuperman et al, 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows).'}
+```{r overall, fig.width = 3.5, fig.cap = 'Correlation between adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows).'}
 data_overall <- kidaoa_data %>% 
   # drop the adults, so it's only kids performance average
   filter(age != "adult") %>%
@@ -104,8 +110,10 @@ overall <- ggplot(kidaoa_data, aes(x = aoa, y = judgment,
                       label = word)) + 
   # geom_jitter() +
   geom_smooth(method = "lm") +
-  geom_label_repel(data = data_overall) +
-  xlab("Adult AoA estimates") +
+  # geom_label_repel(data = data_overall) +
+  geom_label_repel(data = data_overall, point.padding = 0, size = 3,
+        label.padding = .15, label.size = .1) +
+  xlab("Adult AoA Estimates") +
   ylab("Children's Judgments") +
   scale_y_continuous(breaks = c(1:6), limit = c(1,6))
 
@@ -114,11 +122,34 @@ print(overall, type = "figure", comment = F, fig.placement = "b", floating = TRU
 
 # Results
 
-Do children’s judgments about a fictional character’s vocabulary knowledge reflect a sensitivity to which words are learned later? To answer this question, we compared children’s judgments on our 6-point scale to adult judgments from Kuperman et al. (2012). Data were analyzed using pre-registered mixed effects model predicting children’s judgments from adult AoA estimates (Kuperman et al., 2012), including random effects for participant and word. 
+Do children’s judgments about a fictional character’s vocabulary knowledge reflect a sensitivity to which words are learned later? To answer this question, we compared children’s judgments on our 6-point scale to adult judgments from Kuperman et al. (2012). Data were analyzed using pre-registered mixed effects model predicting children’s judgments from adult AoA estimates (Kuperman et al., 2012), including random effects for participant and word. Using the lme4 package in R (**citation**), our model syntax was `judgment ~ aoa + (1 | participant) + (1|word)`.
 
-First running the model without an age-term, we see a significant negative effect of AoA on children’s judgements (B = -0.67, p < 0.001). That is, overall children judged that the fictional child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see Figure 3).
 
-```{r development, fig.env = "figure*", fig.width = 7, fig.height = 3, fig.cap = 'Children’s judgements across development. Comparing adult AoA estimates (in years, taken from Kuperman et al, 2012) and children’s judgments, split by age in years.'}
+```{r model}
+model_data <- kidaoa_data %>%
+  ungroup() %>%
+  mutate(age = scale(as.numeric(age), scale = F),
+         aoa_std = scale(aoa),
+         judgment_std = scale(judgment))
+
+overall_model <- model_data %>%
+  lmer(judgment ~ aoa + (1 | id) + (1|word),
+       data = .) %>%
+  tidy() %>%
+  filter(effect == "fixed") %>%
+  mutate(d = t_to_d(statistic, df)$d,
+         d_low = t_to_d(statistic, df)$CI_low,
+         d_high = t_to_d(statistic, df)$CI_high) %>%
+  select(-effect, -group, -std.error) %>%
+  mutate(p.value = printp(p.value))
+
+overall_aoa <- overall_model %>% filter(term == "aoa")
+```
+
+
+First running the model without an age-term, we see a significant negative effect of AoA on children’s judgements ($\beta =$ `r overall_aoa$estimate`, $t =$ `r overall_aoa$statistic`, $p$ `r overall_aoa$p.value`). That is, overall children judged that the fictional child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see (Figure \ref{fig:overall})).
+
+```{r development, fig.env = "figure*", fig.width = 7, fig.height = 3, fig.cap = 'Children’s judgements across development. Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments, split by age in years.'}
 
 data_by_age <- kidaoa_data %>% 
   mutate(word = substr(word, 0, 3)) %>%
@@ -134,10 +165,8 @@ development <- ggplot(kidaoa_data, aes(x = aoa, y = judgment, group = age,
   geom_smooth(method = "lm") +
   geom_point(data = data_by_age) +
   # a bit hard to see on this plot if we use labels, suggest we use regular points instead
-  # geom_label_repel(data = data_by_age, point.padding = 0, 
-        # label.padding = .15, label.size = .1) +
   facet_grid(.~age) + 
-  xlab("Adult AoA estimates (Kuperman)") +
+  xlab("Adult AoA Estimates") +
   ylab("Kid Judgments") +
   coord_cartesian(ylim = c(0,7)) +
   scale_y_continuous(breaks = c(1:6))
@@ -146,9 +175,41 @@ print(development, fig.align = "center", fig.pos="tb",
       environment = "figure*")
 ```
 
-To test for developmental changes in children’s responses, we used the same mixed effects model but included an effect of age and an interaction between AoA and age. We expected that older children’s judgments would more closely reflect word-level AoA data, yielding a significant interaction between AoA and child’s age. That is, when plotting children’s judgments against adult AoA estimates, older children would show steeper negative slopes than younger children. 
+```{r}
+dev_model <- model_data %>%
+  lmer(judgment ~ aoa * age + (1 | id) + (1|word),
+       data = .) %>%
+  tidy() %>%
+  filter(effect == "fixed") %>%
+  mutate(d = t_to_d(statistic, df)$d,
+         d_low = t_to_d(statistic, df)$CI_low,
+         d_high = t_to_d(statistic, df)$CI_high) %>%
+  select(-effect, -group, -std.error) %>%
+  mutate(p.value = printp(p.value))
 
-To test the robustness of this intuition at each age, we ran the above model separately for each group. We found a negative effect of AoA on children’s judgments at all age groups. That is, even 4-year-old children judged that late-acquired animal words were less likely to be known by the fictional character. We also found that the correlation becomes more negative with children’s age. [By age x, children’s judgments resemble those of adults]
+dev_aoa <- dev_model %>% filter(term == "aoa")
+dev_age <- dev_model %>% filter(term == "age")
+dev_interaction <- dev_model %>% filter(term == "aoa:age")
+```
+
+
+To test for developmental changes in children’s responses, we used the same mixed effects model but included an effect of age and an interaction between AoA and age. Our model syntax was `judgment ~ aoa * age + (1 | participant) + (1|word)`.  We expected that older children’s judgments would more closely reflect word-level AoA data, yielding a significant interaction between AoA and child’s age. That is, when plotting children’s judgments against adult AoA estimates, older children would show steeper negative slopes than younger children. Again, our model shows the same main effect of aoa that we saw in the overall model ($\beta =$ `r dev_aoa$estimate`, $t =$ `r dev_aoa$statistic`, $p$ `r dev_aoa$p.value`). We also see a positive main effect of children's age on their ratings ($\beta =$ `r dev_age$estimate`, $t =$ `r dev_age$statistic`, $p$ `r dev_age$p.value`). Crucially, we see our expected interaction between child's age and adult's estimated AoA ($\beta =$ `r dev_interaction$estimate`, $t =$ `r dev_interaction$statistic`, $p$ `r dev_interaction$p.value`), suggesting that children's judgements are becoming more adult-like in this age range (Figure \ref{fig:development}).
+
+```{r}
+# effect within each age group
+fours <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 4))) %>% tidy()
+fives <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 5)))
+sixes <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 6)))
+sevens <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 7)))
+eights <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 8)))
+adults <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == "adult")))
+
+#fours are weakest, so we'll report that as such
+fours_aoa <- fours %>% filter(term == "aoa") %>% mutate(p.value = printp(p.value, digits = 2))
+```
+
+
+To test the robustness of this intuition at each age, we ran the above model separately for each year-wise age group. While we see evidence of developmental change above, this analysis helps us understand if even young children are showing this intuition. We found a negative effect of AoA on children’s judgments at all age groups (smallest effect in 4-year-olds, $\beta =$ `r fours_aoa$estimate`, $t =$ `r fours_aoa$statistic`, $p =$ `r fours_aoa$p.value`). That is, even 4-year-old children judged that late-acquired animal words were less likely to be known by the fictional character.
 
 ### Explanations
 
@@ -160,9 +221,9 @@ To test the robustness of this intuition at each age, we ran the above model sep
 
 \vspace{1em} \fbox{\parbox[b][][c]{7.3cm}{\centering Stimuli, data, and analysis code available after deanonymization.}}
 
-# Acknowledgements
+<!-- # Acknowledgements -->
 
-This research was funded by a James S. McDonnell Foundation Scholar Award to DY. 
+<!-- This research was funded by a James S. McDonnell Foundation Scholar Award to DY.  -->
 
 # References 
 
