@@ -1,0 +1,176 @@
+---
+title: "Children’s understanding of others’ lexical knowledge"
+bibliography: kidaoa.bib
+csl: apa6.csl
+document-params: "10pt, letterpaper"
+
+author-information: > 
+
+abstract: > 
+    The abstract. 
+  
+
+keywords: >
+    communication, metalinguistics, knowledge reasoning, cognitive development
+    
+output: cogsci2016::cogsci_paper
+# final-submission:  \cogscifinalcopy
+---
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=3, fig.height=3, fig.crop = F, 
+                      fig.pos = "tb", fig.path='figs/',
+                      echo = F, warning = F, cache = F, 
+                      message = F, sanitize = T)
+# Note: to build, 
+options(digits=2)
+```
+
+```{r}
+library(tidyverse)
+library(here)
+library(ggrepel)
+library(lme4)
+library(ggthemes)
+
+theme_set(theme_few(base_size = 14))
+```
+
+
+# Introduction
+
+When we communicate with other people, we choose our words carefully to transmit information that we think our partner will understand. For instance, we referred to “lexical” knowledge in the title of this paper because it conveys something precise the Cognitive Science Conference audience. But if we were to tell a friend about the work in this paper we would say that “children know what words other children probably know.”
+
+Do you remember when you learned the word dog? What about aardvark? While you might not be able to say the exact age at which you learned these animals, you probably think you learned aardvark after dog. You can probably give reasons for this intuition -- dogs are more common, they are in lots of children’s books, it’s a short word, and so on. Asked to make such judgments, adults are able to recover the order that children actually acquire words (Kuperman et al., 2012). This kind of intuition could help you tune your communication with young children, talking very differently about dogs compared with aardvarks. Do children also have intuitions about when words are learned? If so, these intuitions would reflect significant metalinguistic knowledge, and may even enable them to tune their conversation with others. In this study we ask how children infer another’s lexical knowledge, specifically whether they make item-level predictions about what words a very young child is likely to know.
+
+Adults show significant metalinguistic knowledge. In a large-scale study, Kuperman, Stadthagen-Gonzalez, and Brysbaert (2012) asked adult participants to report the age at which they understood a given word and obtained judgments for 30,000 English words. These judgments can then be directly compared with data on the typical age that a given word is actually learned (also called its age of acquisition, hereafter referred to as AoA). While adults typically overestimate the absolute age at which they learned a given word, the estimated order in which words are acquired is mostly intact (Kuperman, et al., 2012). Adults are thus able to make graded and surprisingly accurate relative estimates of when a word was learned.
+
+(if we do it in this order, do we need to make a better bridge from AoA to what another agent knows? Like, in order for this skill to be useful in conversation, one must be able to recruit this metalinguistic knowledge to draw on-the-fly inferences about what an interlocutor’s likely lexical knowledge…)
+
+From a young age, children are sensitive to their own and others’ knowledge states. As early as 12-months-old, children point more to help an ignorant adult locate an object than a knowledgeable adult who saw the object fall (Liszkowski, Carpenter, & Tomasello, 2008). At age 2, children begin to comment on, query, and discuss knowledge states explicitly in their own language (Harris, Yang, & Cui, 2017). By age 4, children differentiate reliable and unreliable speakers, and privilege information from reliable sources (e.g., Koenig & Harris, 2005). 
+
+While a great deal of work establishes children's ability to use situational knowledge (e.g., knowledge from perceptual access), preschool age children have also been shown to reason about more general, stable differences in knowledge. Preschool age children are able to reason about expertise, for example differentiating the knowledge of a doctor and a mechanic (Lutz & Keil, 2002). Preschool age children also recognize that adults typically have more linguistic knowledge than children (Jaswal & Neely, 2006), but also that children might know more about some things, such as toys (VanderBorght & Jaswal, 2008). Indeed, children are able to reason flexibly about changes in general knowledge across development, ascribing different levels of general knowledge to an infant, preschool child, and an adult (Fitneva, 2010; Taylor, Cartwright, & Bowden, 1991). Beyond considering the knowledge of specific individuals, children are also able to draw inferences about how commonly something is known, reasoning that generic information is likely more widely known than specific information (Cimpian & Scott, 2012). 
+
+Young children show an impressive ability to track other people’s knowledge across a wide range of situations, but relatively little work has been done to probe the specificity and granularity of children’s inferences about others’ knowledge. Reasoning about another person’s specific lexical knowledge may prove difficult for young children as they also show consistent errors in reasoning about other’s knowledge, commonly over-attributing knowledge (e.g. Gopnik & Astington, 1988; Taylor, Esbensen, & Bennett, 1994). The bias to over-attribute knowledge is particularly pronounced when the child themselves knows the piece of information (Birch & Bloom, 2003). After seeing inside a toy, 3-year-old children often attributed knowledge of what was inside the toy to a puppet that had never played with the toy (Birch & Bloom, 2003). Such curse-of-knowledge biases could severely hinder children’s ability to reason about the lexical knowledge of another child.
+
+[Something about why/how we arrived at lexical knowledge as the thing to study-- maybe the connection to communication? Bridge to our study]
+
+In this study, we ask whether children have accurate estimates of other children’s knowledge. Specifically, we are interested in whether children are sensitive to the specific vocabulary knowledge of younger children and are able to make item-wise predictions. Such predictions are crucial to communicate effectively with various interlocutors and account for varying knowledge and perspectives. By age 5, children are richly structure their language based on a listener’s knowledge, for example offering more generic information to ignorant listeners (Baer & Friedman, 2018). Such studies typically heavily and repeatedly emphasize an interlocutors knowledge state, to test for children’s ability to adapt their communication in the absence of knowledge reasoning. Children’s possible difficulty specific knowledge predictions may hinder their performance in other communication tasks (e.g. Krauss & Glucksberg, 1977). 
+
+To our knowledge, only one study has asked children to give AoA estimates for English words (Walley & Metsala, 1992). In their study, Walley and Metsala (1992) used a broad set of words acquired over a large range of ages (from table to valet) to investigate young children’s general metalinguistic knowledge. As young as age 5, children generated AoA estimates that were similar to adults’. Our study builds on Walley and Metsala’s (1992) work to collect more sensitive AoA estimates in a single domain (animal words). To probe the specificity and sensitivity of children’s AoA estimates, the animal words we use in this study are generally acquired within a narrow age range of 2 to 2.5, based on parent reports of children’s vocabulary (Wordbank). Our study also differs from Walley and Metsala’s (1992) in a crucial way--rather than asking children when they themselves learned a word, we ask them to estimate the vocabulary knowledge of another fictional child. This framing also allowed us to not ask children the age at which they learned a word, but instead their certainty about the other child’s knowledge. Lastly, our study also probes whether children as young as 4 might show this capacity to reason about another child’s lexical knowledge.
+
+In the current study, children ages 4-8 were introduced to a younger fictional child, and asked to make judgments about this fictional child’s knowledge of various animal words. We expected that overall, children’s judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the child is most likely to know early acquired words, yielding a negative correlation between their judgments of lexical knowledge and adult AoA estimates. We expect developmental change in children’s sensitivity to Sam’s vocabulary knowledge, with older children’s judgments recovering word-level AoA data more closely.
+
+# Method
+
+#### Stimuli
+
+Our stimuli consisted of 15 words drawn from a single domain (animal words), along with corresponding images of each animal. We pulled all animal images (n = 45) from a normed image set (Rossion & Pourtois, 2004; recoloring of Snodgrass & Vanderwart, 1980). To ensure our stimuli set spanned a large AoA range, we ranked the animal words from earliest to latest AoA, using data from Kuperman et al. (2012), and split the words into five bins (as shown in Figure 1). In order to select animal images that are recognizable and typically identified by a single name, we chose the three animals from each AoA quintile with the highest naming agreement according to a naming task with children (Cycowicz et al., 1997).  Our final stimuli consisted of these 15 items, ordered here by estimated AoA: dog, duck, cat, pig, fish, turtle, zebra, elephant, snake, penguin, gorilla, owl, raccoon, leopard, and lobster. While adult AoA estimates for these words range from 2.5 to 7.5 years old, all of these animal words are generally acquired by age 3 according to parent reports of children’s vocabulary knowledge (Wordbank?). Because the youngest children in our study are 4 years old, we expect all participants to know these animal words.
+
+Participants
+
+We pre-registered a planned sample of 60 children ages 4-8, with 12 children recruited for each year-wise age group. Due to overrecruitment, our final sample included 65 children (12 4-year-olds, 13 5-year-olds, 13 6-year-olds, 12 7-year-olds, 15 8-year-olds). All analyses hold when looking only at the 60 children run first chronologically. Based on our pre-registered exclusion criterion, children who failed to answer all of the questions were excluded and replaced (an additional 7 children). Families were recruited online, primarily through a US University database of families who have expressed interested in doing research or previously participated. Children completed this study over Zoom, interacting with a live experimenter who navigated a slide-style, animated Qualtrics survey.
+
+
+### Procedure
+
+*Introduction.* Children were shown a picture of a fictional child named “Sam” (see Figure 2). Children were anchored to Sam’s knowledge of various familiar skills, specifically some skills that Sam has acquired (e.g., coloring), and some that Sam has not (e.g., reading). Children are then specifically anchored to Sam’s possible word knowledge in an unrelated domain-- given an example of one word Sam knows (car), and one word that Sam doesn’t know (piano). This introduction is intended to familiarize the children with Sam, roughly anchor them to Sam’s knowledge and age, and to ensure that children understand there are things Sam doesn’t know yet (even things children themselves likely know, such as how to read).
+
+*General trial structure.* At each trial, children were shown a drawing of a familiar object or animal (drawings taken from Rossion & Pourtois, 2004, which is a recoloring of Snodgrass & Vanderwart, 1980). The experimenter labelled the object for the child (e.g., “Look, it’s a [ball]! Do you think Sam knows that this is called a [ball]? Yes or no?”). Based on their response, children are then asked a follow-up question: “How sure are you that Sam [knows/doesn’t know] that this is called a [ball]-- a little sure, medium sure, or very sure?” All questions were presented with accompanying pictures of thumbs [up/down] of varying size (see Figure 2). Children as young as 3 are able to engage in uncertainty monitoring and report confidence, although these skills do develop in the preschool years (Lyons & Ghetti, 2011). Children’s responses to these two items were recoded onto a 1-6 scale from 1-very sure Sam doesn’t know to 6-very sure Sam knows. All trials followed this general structure.
+The experimenter provided no evaluative feedback on any trials, but did offer consistent neutral feedback (e.g., repeating the child’s answer or saying “Okay!”). When a child failed to respond within about 5 seconds or offered a non-canonical response (e.g., saying “Maybe”), the experimenter acknowledged the child’s answer and then repeated the question with the possible responses. If a child did not answer after the repetition was repeated, the experimenter moved on and marked the trial as no response.
+
+*Familiarization trials.* Children first completed two non-animal familiarization trials, one of an early-acquired word (ball) and one of a late-acquired word (artichoke). These trials followed the trial structure described above and were intended to help familiarize children with the structure of the questions and scales. These trials were always asked first and in a fixed order.
+
+*Animal trials.* Children were then shown 15 trials of the same form for various familiar animals. For the 15 animal trials, trial order was randomized across participants to control for any potential order effects in children’s responses.
+
+*Explanation.* After completing the final animal trial, children were asked an open-ended explanation question about their final judgement (e.g., “Why do you think Sam [knows/doesn’t know] that this is called [an elephant]?”).
+
+*Final check questions.* Children were asked whether they think Sam knows how to do two tasks: jumping and driving a car. These questions again followed the general trial structure described above. These trials were included as an additional check in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children’s belief about Sam. Sam’s photo and skill knowledge were intended to indicate toddlerhood.
+
+```{r}
+kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1)
+```
+
+```{r overall, fig.cap = 'Correlation between adult AoA estimates (in years, taken from Kuperman et al, 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows).'}
+data_overall <- kidaoa_data %>% 
+  # drop the adults, so it's only kids performance average
+  filter(age != "adult") %>%
+  group_by(word, aoa) %>%
+  summarize(judgment = mean(judgment, na.rm = T))
+
+#use the raw data to make line and variability
+   #points show averages
+overall <- ggplot(kidaoa_data, aes(x = aoa, y = judgment,
+                      label = word)) + 
+  # geom_jitter() +
+  geom_smooth(method = "lm") +
+  geom_label_repel(data = data_overall) +
+  xlab("Adult AoA estimates") +
+  ylab("Children's Judgments") +
+  scale_y_continuous(breaks = c(1:6), limit = c(1,6))
+
+print(overall, type = "figure", comment = F, fig.placement = "b", floating = TRUE)
+```
+
+# Results
+
+Do children’s judgments about a fictional character’s vocabulary knowledge reflect a sensitivity to which words are learned later? To answer this question, we compared children’s judgments on our 6-point scale to adult judgments from Kuperman et al. (2012). Data were analyzed using pre-registered mixed effects model predicting children’s judgments from adult AoA estimates (Kuperman et al., 2012), including random effects for participant and word. 
+
+First running the model without an age-term, we see a significant negative effect of AoA on children’s judgements (B = -0.67, p < 0.001). That is, overall children judged that the fictional child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see Figure 3).
+
+```{r development, fig.cap = 'Children’s judgements across development. Comparing adult AoA estimates (in years, taken from Kuperman et al, 2012) and children’s judgments, split by age in years.'}
+
+data_by_age <- kidaoa_data %>% 
+  mutate(word = substr(word, 0, 3)) %>%
+  group_by(age, word, aoa) %>%
+  summarize(judgment = mean(judgment, na.rm=T))
+
+#use the raw data to make line and variability
+   #points show averages by age
+development <- ggplot(kidaoa_data, aes(x = aoa, y = judgment, group = age,
+                      label = word)) + 
+  # # if we want to add raw data
+  # geom_jitter(color = "grey" , alpha = .5) +
+  geom_smooth(method = "lm") +
+  geom_point(data = data_by_age) +
+  # a bit hard to see on this plot if we use labels, suggest we use regular points instead
+  # geom_label_repel(data = data_by_age, point.padding = 0, 
+        # label.padding = .15, label.size = .1) +
+  facet_grid(.~age) + 
+  xlab("Adult AoA estimates (Kuperman)") +
+  ylab("Kid Judgments") +
+  coord_cartesian(ylim = c(0,7)) +
+  scale_y_continuous(breaks = c(1:6))
+
+print(development, fig.align = "center", fig.pos="tb", 
+      environment = "figure*")
+```
+
+To test for developmental changes in children’s responses, we used the same mixed effects model but included an effect of age and an interaction between AoA and age. We expected that older children’s judgments would more closely reflect word-level AoA data, yielding a significant interaction between AoA and child’s age. That is, when plotting children’s judgments against adult AoA estimates, older children would show steeper negative slopes than younger children. 
+
+To test the robustness of this intuition at each age, we ran the above model separately for each group. We found a negative effect of AoA on children’s judgments at all age groups. That is, even 4-year-old children judged that late-acquired animal words were less likely to be known by the fictional character. We also found that the correlation becomes more negative with children’s age. [By age x, children’s judgments resemble those of adults]
+
+### Explanations
+
+# Discussion
+
+
+
+
+
+\vspace{1em} \fbox{\parbox[b][][c]{7.3cm}{\centering Stimuli, data, and analysis code available after deanonymization.}}
+
+# Acknowledgements
+
+This research was funded by a James S. McDonnell Foundation Scholar Award to DY. 
+
+# References 
+
+```{r}
+# References will be generated automatically by Pandoc and included here.
+# The following code is some latex to format the bibliography. Do not remove it.
+```
+
+\setlength{\parindent}{-0.1in} 
+\setlength{\leftskip}{0.125in}
+\noindent
