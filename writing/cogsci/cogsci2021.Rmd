@@ -118,7 +118,7 @@ Do children’s judgments about a fictional character’s vocabulary knowledge r
 
 First running the model without an age-term, we see a significant negative effect of AoA on children’s judgements (B = -0.67, p < 0.001). That is, overall children judged that the fictional child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see Figure 3).
 
-```{r development, fig.cap = 'Children’s judgements across development. Comparing adult AoA estimates (in years, taken from Kuperman et al, 2012) and children’s judgments, split by age in years.'}
+```{r development, fig.env = "figure*", fig.width = 7, fig.height = 3, fig.cap = 'Children’s judgements across development. Comparing adult AoA estimates (in years, taken from Kuperman et al, 2012) and children’s judgments, split by age in years.'}
 
 data_by_age <- kidaoa_data %>% 
   mutate(word = substr(word, 0, 3)) %>%

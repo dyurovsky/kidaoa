@@ -110,6 +110,11 @@ data_overall <- joined_data %>%
   group_by(word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm = T))
 
+joined_data %>%
+  mutate(aoa = floor(aoa)) %>%
+  ggplot(aes(x = aoa, y = judgment)) + 
+  geom_boxplot()
+
 #use the raw data to make line and variability
    #points show averages
 ggplot(joined_data, aes(x = aoa, y = judgment,
@@ -122,6 +127,16 @@ ggplot(joined_data, aes(x = aoa, y = judgment,
   scale_y_continuous(breaks = c(1:6), limit = c(1,6))
 ```
 
+```{r}
+lm(judgment ~ aoa, data = joined_data) %>%
+  summary()
+
+joined_data %>%
+  group_by(word) %>%
+  summarise(mean = mean(judgment),
+            sd = sd(judgment),
+            n = n())
+```
 
 # Averages by age
 
