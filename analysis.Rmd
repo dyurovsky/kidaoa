@@ -46,15 +46,18 @@ mutated_items <- map(items, ~c(glue("{.x}_yes"), glue("{.x}_no"))) %>%
   unlist()
 
 
-
-data <- read_csv(here("kid_data/kid_qualtrics_raw_final.csv")) %>%
+# kid data
+tmp <- read_csv(here("kid_data/kid_qualtrics_raw_final.csv")) %>%
   slice(2:n()) %>%
   filter(Finished == "True") %>%
   select(-StartDate:-UserLanguage) %>%
   filter(!is.na(Q60)) %>%
   rename(age = Q59, gender = Q60) %>%
-  select(age, gender, all_of(mutated_items)) %>%
-  mutate(id = row_number()) %>%
+  select(age, gender, all_of(mutated_items), Why) %>%
+  mutate(id = row_number()) 
+
+data <- tmp %>%
+  select(-Why) %>%
   pivot_longer(cols = all_of(mutated_items), names_to = "item", 
                values_to = "judgment") %>%
   rowwise() %>%
@@ -76,6 +79,40 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 ```
 
 ```{r}
+#adult comparison data
+tmp <- read_csv(here("adult_data/aoa_adult_raw_1.15.2021.csv")) %>%
+  slice(2:n()) %>%
+  filter(Finished == "True") %>%
+  select(-StartDate:-UserLanguage) %>%
+  filter(attn_check == 15) %>%
+  select(all_of(items), Why) %>%
+  mutate(id = row_number())
+
+adult_data <- tmp[-1:-6,] %>%
+  select(-Why) %>%
+  pivot_longer(cols = all_of(items), names_to = "item", 
+               values_to = "judgment") %>%
+  rowwise() %>%
+  mutate(item = str_split(item, "_",simplify = TRUE)[1]) %>%
+  group_by(id, item) %>%
+  mutate(judgment = as.numeric(judgment)) %>%
+  summarise(judgment = mean(judgment, na.rm = TRUE)) %>%
+  mutate(age = "adult")
+
+adult_word_data <- adult_data %>%
+  filter(!item %in% c("artichoke", "ball", "car", "stairs")) %>%
+  rename(word = item)
+
+adult_practice_data <- adult_data %>%
+  filter(item %in% c("artichoke", "ball", "car", "stairs")) %>%
+  rename(word = item) %>%
+  filter(!is.na(judgment))
+
+kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
+```
+
+
+```{r}
 #to drop for not answering every question
 toDrop <- data %>% 
   filter(is.na(judgment)) %>%
@@ -95,18 +132,16 @@ data %>% distinct(age, id) %>% ungroup() %>%
 ```{r plot-pilot-data}
 joined_data <- word_data %>%
   filter(!id %in% (toDrop %>% pull(id))) %>%
-  left_join(kuperman_aoas, by = "word") %>%
-  mutate(age_group = case_when(
-    age %in% 4:5 ~ "4-5-year-olds",
-    age %in% 6:7 ~ "6-7-year-olds",
-    age %in% 8:9 ~ "8-9-year-olds",
-    age == 10 ~ "older"))
+  bind_rows(adult_word_data) %>%
+  left_join(kuperman_aoas, by = "word")
 ```
 
 # Overall Effect
 
 ```{r overall}
 data_overall <- joined_data %>% 
+  # only kids
+  filter(age != "adult") %>%
   group_by(word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm = T))
 
@@ -122,7 +157,7 @@ ggplot(joined_data, aes(x = aoa, y = judgment,
   # geom_jitter() +
   geom_smooth(method = "lm") +
   geom_label_repel(data = data_overall) +
-  xlab("Kuperman AoA estimates (adults)") +
+  xlab("Adult AoA estimates (Kuperman)") +
   ylab("Kid Judgments") +
   scale_y_continuous(breaks = c(1:6), limit = c(1,6))
 ```
@@ -158,11 +193,53 @@ ggplot(joined_data, aes(x = aoa, y = judgment, group = age,
   # geom_label_repel(data = data_by_age, point.padding = 0, 
         # label.padding = .15, label.size = .1) +
   facet_grid(.~age) + 
-  xlab("Kuperman AoA estimates (adults)") +
+  xlab("Adult AoA estimates (Kuperman)") +
   ylab("Kid Judgments") +
   coord_cartesian(ylim = c(0,7)) +
   scale_y_continuous(breaks = c(1:6))
 ```
+
+
+# vs. adult judgements, not Kuperman
+
+```{r}
+# split half adult data
+training_adults <- adult_word_data %>% distinct(id) %>% pull(.) %>% sample(length(.)/2)
+testing_adults <- adult_word_data %>% distinct(id) %>% filter(!id %in% training_adults) %>% pull(id)
+
+adult_avg <- adult_word_data %>%
+  filter(id %in% training_adults) %>%
+  group_by(word) %>%
+  summarize(adult_judgment = mean(judgment))
+
+joined_adult_wide <- joined_data %>%
+  left_join(adult_avg) %>%
+  filter(! (id %in% training_adults & age == "adult"))
+
+data_by_age <- joined_adult_wide %>% 
+  mutate(word = substr(word, 0, 3)) %>%
+  group_by(age, word, aoa, adult_judgment) %>%
+  summarize(judgment = mean(judgment, na.rm=T))
+
+#use the raw data to make line and variability
+   #points show averages by age
+ggplot(joined_adult_wide, aes(x = adult_judgment, y = judgment, group = age,
+                      label = word)) + 
+  # # if we want to add raw data
+  # geom_jitter(color = "grey" , alpha = .5) +
+  geom_smooth(method = "lm") +
+  geom_point(data = data_by_age) +
+  # a bit hard to see on this plot if we use labels, suggest we use regular points instead
+  # geom_label_repel(data = data_by_age, point.padding = 0, 
+        # label.padding = .15, label.size = .1) +
+  facet_grid(.~age) + 
+  xlab("Adult Judgements") +
+  ylab("Kid Judgments") +
+  coord_cartesian(ylim = c(1,6), xlim = c(2,6)) +
+  scale_y_continuous(breaks = c(1:6)) +
+  scale_x_continuous(breaks = c(1:6))
+```
+
 
 ### Plot word-level ratings, by age (ordered by AoA)
 
@@ -292,5 +369,44 @@ age_correlations %>%
   geom_point() +
   geom_linerange(aes(ymin = ci_lower, ymax = ci_upper)) +
   geom_hline(yintercept = 0, linetype = "dashed")
+```
+
+
+
+# Explanations
+
+```{r}
+explanations <- read_csv("~/Downloads/explanations_code_BM.csv") 
+# 1 is location
+# 2 is language
+# 3 is experience
+# 4 is other (+ idks)
+# 5 is age/maturation
+
+explanations %>%
+  count(as.factor(Code)) %>% mutate(prop = n/sum(n))
+
+joined_with_explanations <- left_join(joined_data, explanations, by = "id")
+```
+
+# Overall Effect, by explanation type
+
+```{r, fig.height = 6, fig.width = 9}
+data_by_explanation <- joined_with_explanations %>% 
+  group_by(Code, word, aoa) %>%
+  summarize(judgment = mean(judgment, na.rm=T))
+
+#use the raw data to make line and variability
+   #points show averages by Code
+ggplot(joined_with_explanations, aes(x = aoa, y = judgment, group = Code,
+                      label = word)) +
+  geom_point(color = "grey", alpha = .2) +
+  geom_smooth(method = "lm") +
+  geom_point(data = data_by_explanation) +
+  facet_grid(.~Code) + 
+  xlab("Kuperman AoA estimates (adults)") +
+  ylab("Kid Judgments") +
+  coord_cartesian(ylim = c(0,7)) +
+  scale_y_continuous(breaks = c(1:6))
 ```
 
