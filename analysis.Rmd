@@ -383,6 +383,16 @@ explanations <- read_csv("~/Downloads/explanations_code_BM.csv")
 # 4 is other (+ idks)
 # 5 is age/maturation
 
+exp_1 <- read_csv(here("kid_data/explanations_coded_AL.csv"))
+exp_1[is.na(exp_1)] <- 0
+
+exp_2 <- read_csv(here("kid_data/explanations_coded-Cass.csv"))
+exp_2[is.na(exp_2)] <- 0
+
+explanations <- bind_rows(exp_1, exp_2) %>%
+  group_by(ID, why) %>%
+  summarise_all(sum)
+
 explanations %>%
   count(as.factor(Code)) %>% mutate(prop = n/sum(n))
 
@@ -409,4 +419,3 @@ ggplot(joined_with_explanations, aes(x = aoa, y = judgment, group = Code,
   coord_cartesian(ylim = c(0,7)) +
   scale_y_continuous(breaks = c(1:6))
 ```
-
