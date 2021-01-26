@@ -50,10 +50,11 @@ mutated_items <- map(items, ~c(glue("{.x}_yes"), glue("{.x}_no"))) %>%
 tmp <- read_csv(here("kid_data/kid_qualtrics_raw_final.csv")) %>%
   slice(2:n()) %>%
   filter(Finished == "True") %>%
-  select(-StartDate:-UserLanguage) %>%
+  select(-EndDate:-UserLanguage) %>%
   filter(!is.na(Q60)) %>%
-  rename(age = Q59, gender = Q60) %>%
-  select(age, gender, all_of(mutated_items), Why) %>%
+  rename(age = Q59, gender = Q60, db_id = ID, exclude = Q61) %>%
+  filter(is.na(exclude)) %>%
+  select(db_id, age, gender, all_of(mutated_items), Why) %>%
   mutate(id = row_number()) 
 
 data <- tmp %>%
@@ -62,7 +63,7 @@ data <- tmp %>%
                values_to = "judgment") %>%
   rowwise() %>%
   mutate(item = str_split(item, "_",simplify = TRUE)[1]) %>%
-  group_by(age, gender, id, item) %>%
+  group_by(age, gender, db_id, id, item) %>%
   mutate(judgment = as.numeric(judgment)) %>%
   summarise(judgment = mean(judgment, na.rm = TRUE))
 
@@ -80,7 +81,7 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 
 ```{r}
 #adult comparison data
-tmp <- read_csv(here("adult_data/aoa_adult_raw_1.15.2021.csv")) %>%
+adult_tmp <- read_csv(here("adult_data/aoa_adult_raw_1.15.2021.csv")) %>%
   slice(2:n()) %>%
   filter(Finished == "True") %>%
   select(-StartDate:-UserLanguage) %>%
@@ -88,7 +89,7 @@ tmp <- read_csv(here("adult_data/aoa_adult_raw_1.15.2021.csv")) %>%
   select(all_of(items), Why) %>%
   mutate(id = row_number())
 
-adult_data <- tmp[-1:-6,] %>%
+adult_data <- adult_tmp[-1:-6,] %>%
   select(-Why) %>%
   pivot_longer(cols = all_of(items), names_to = "item", 
                values_to = "judgment") %>%
@@ -116,7 +117,7 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 #to drop for not answering every question
 toDrop <- data %>% 
   filter(is.na(judgment)) %>%
-  distinct(id, age)
+  distinct(db_id, id, age)
 
 toDrop
 
@@ -136,6 +137,15 @@ joined_data <- word_data %>%
   left_join(kuperman_aoas, by = "word")
 ```
 
+```{r}
+# explanations
+explanations <- tmp %>% 
+  filter(!id %in% (toDrop %>% pull(id))) %>%
+  select(id, db_id, Why) %>%
+  sample_n(nrow(.))
+```
+
+
 # Overall Effect
 
 ```{r overall}
@@ -144,11 +154,6 @@ data_overall <- joined_data %>%
   filter(age != "adult") %>%
   group_by(word, aoa) %>%
   summarize(judgment = mean(judgment, na.rm = T))
-
-joined_data %>%
-  mutate(aoa = floor(aoa)) %>%
-  ggplot(aes(x = aoa, y = judgment)) + 
-  geom_boxplot()
 
 #use the raw data to make line and variability
    #points show averages
