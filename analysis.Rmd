@@ -398,6 +398,37 @@ explanations <- bind_rows(exp_1, exp_2) %>%
   group_by(ID, why) %>%
   summarise_all(sum)
 
+irr <- explanations %>%
+  ungroup %>%
+  select(-c(ID, why))
+
+for (i in 1:nrow(irr)) {
+  for (j in 1:6){
+    if (irr[i,j] == 1) {
+      irr[i,j] = 0
+    } else if (irr[i,j] == 2) {
+      irr[i,j] = 1
+    } else {
+      irr[i,j] = NA
+    }
+    }
+}
+
+reliability <- irr %>%
+  rowMeans(na.rm = T) %>%
+  mean()
+
+prop <- exp_1 %>%
+  select(-c(ID, why)) %>%
+  summarise_all(mean) %>%
+  pivot_longer(c(age, experience, language, location, `don't know`, other), 
+               names_to = "exp")
+
+ggplot(prop, aes(x = reorder(exp, value), y = value, fill = exp)) + 
+  geom_bar(stat = "identity") +
+  labs(x = "Explanation", y = "Proportion")
+
+
 explanations %>%
   count(as.factor(Code)) %>% mutate(prop = n/sum(n))
 
