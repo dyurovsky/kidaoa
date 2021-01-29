@@ -1,5 +1,5 @@
 ---
-title: "Kid AoA expeirment analysis"
+title: "Kid AoA pilot experiment analysis"
 author: "Ashley Leung, Ben Morris, and Dan Yurovsky"
 date: '`r Sys.Date()`'
 output: 

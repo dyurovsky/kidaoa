@@ -46,13 +46,18 @@ binned_data <- joined_data %>%
   mutate(quintile = cut(aoa, 5)) %>%
   group_by(quintile)%>%
   mutate(rank = rank(desc(percent_agreement))) %>%
-  filter(rank <= 3.5)
+  #tie and we dropped donkey
+  filter(word != "donkey") %>%
+  filter(rank <= 3.5) %>%
+  rename(`Percent Agreement` = percent_agreement)
 
-ggplot(binned_data, aes(x = word, y = aoa, color = quintile, size = percent_agreement)) +
+ggplot(binned_data, aes(x = word, y = aoa, color = quintile, size = `Percent Agreement`)) +
   geom_point() + 
   coord_flip() + 
   theme_minimal() + 
-  scale_color_ptol()
+  scale_color_ptol() +
+  xlab("Word") +
+  ylab("Adult's Age of Acquistion Estimate")
 ```
 
 write tidy AoAs
