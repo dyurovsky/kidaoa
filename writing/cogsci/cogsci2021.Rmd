@@ -7,7 +7,7 @@ document-params: "10pt, letterpaper"
 author-information: > 
 
 abstract: > 
-    Communicating effectively requires keeping track of what others know, and what they do not know. As a result, young children's developing ability to communicate effecitvely also requires they learn to infer and update what others are likely to know. Our study asks children ages 4-8 (*n* = 62) to make specific predictions about whether a very young child would know 15 familiar animal words. Comparing these judgements with age of acquisition data from adult reports, we see that children as young as 4 years old are able to make item-level predictions, inferring the target child would be more likely to know easy, early-aquired words (e.g., *dog*) and less likely to know harder, later-accquired words (e.g., *lobster*). We also discuss children's explanations for why words might be known or unknown. In sum, this work suggests that even preschool age children are making sophisticated inferences about what words a very young child might know. 
+    Communicating effectively requires keeping track of what others know, and what they do not know. As a result, young children's developing ability to communicate effectively also requires they learn to infer and update what others are likely to know. Our study asks children ages 4-8 (*n* = 62) to make specific predictions about whether a very young child would know 15 familiar animal words. Comparing these judgements with age of acquisition data from adult reports, we see that children as young as 4 years old are able to make item-level predictions, inferring the target child would be more likely to know easy, early-acquired words (e.g., *dog*) and less likely to know harder, later-acquired words (e.g., *lobster*). We also discuss children's explanations for why words might be known or unknown. In sum, this work suggests that even preschool age children are making sophisticated inferences about what words a very young child might know. 
   
 
 keywords: >
@@ -40,6 +40,7 @@ library(kableExtra)
 library(lmerTest)
 library(png)
 library(xtable)
+library(tidyboot)
 
 theme_set(theme_few(base_size = 14))
 ```
@@ -53,11 +54,7 @@ Adults track and adapt to an interlocutor’s knowledge with relative ease. This
 
 Even in the absence of experience with a specific interlocutor, adults can rely on other metalinguistic knowledge. In a large-scale study, Kuperman, Stadthagen-Gonzalez, and Brysbaert (2012) asked adult participants to report the age at which they understood a given word and obtained judgments for 30,000 English words. These judgments were then directly compared with data on the typical age that a given word is actually learned (also called its age of acquisition, hereafter referred to as AoA). Adults typically overestimate the absolute age at which they learned a given word; however, the estimated order in which words are acquired is intact (Kuperman, et al., 2012). Adults are thus able to make graded and surprisingly accurate relative estimates of when a word was learned.
 
-(if we do it in this order, we need to make a better bridge from AoA to what another agent knows? Like, in order for this skill to be useful in conversation, one must be able to recruit this metalinguistic knowledge to draw on-the-fly inferences about what an interlocutor’s likely lexical knowledge…)
-
-While a great deal of work establishes children's ability to use situational knowledge (e.g., knowledge from perceptual access), young children are also able to reason about more general, stable differences in knowledge. Preschool-age children are able to reason about expertise, for example differentiating the knowledge of a doctor and a mechanic (Lutz & Keil, 2002). Preschool-age children also recognize that adults typically have more linguistic knowledge than children (Jaswal & Neely, 2006), but also that children might know more about some things, such as toys (VanderBorght & Jaswal, 2008). Indeed, children are able to reason flexibly about changes in general knowledge across development, ascribing different levels of general knowledge to an infant, preschool child, and an adult (Fitneva, 2010; Taylor, Cartwright, & Bowden, 1991). 
-
-Young children show an impressive ability to track other people’s knowledge across a wide range of situations, but relatively little work has been done to probe the specificity and granularity of children’s inferences about others’ knowledge. Reasoning about another person’s specific lexical knowledge may prove difficult for young children as they also show consistent errors in reasoning about other’s knowledge, commonly over-attributing knowledge (e.g. Gopnik & Astington, 1988; Taylor, Esbensen, & Bennett, 1994). The bias to over-attribute knowledge is particularly pronounced when the child themselves knows the piece of information (Birch & Bloom, 2003). After seeing inside a toy, 3-year-old children often attributed knowledge of what was inside the toy to a puppet that had never played with the toy (Birch & Bloom, 2003). Such curse-of-knowledge biases could severely hinder children’s ability to reason about the lexical knowledge of another child.
+Young children show an impressive ability to track other people’s knowledge across a wide range of situations. Reasoning about another person’s specific lexical knowledge may prove difficult for young children as they also show consistent errors in reasoning about other’s knowledge, commonly over-attributing knowledge (e.g. Gopnik & Astington, 1988; Taylor, Esbensen, & Bennett, 1994). The bias to over-attribute knowledge is particularly pronounced when the child themselves knows the piece of information (Birch & Bloom, 2003). After seeing inside a toy, 3-year-old children often attributed knowledge of what was inside the toy to a puppet that had never played with the toy (Birch & Bloom, 2003). Such curse-of-knowledge biases could severely hinder children’s ability to reason about the lexical knowledge of another child.
 
 [better bridge to our study]
 
@@ -71,9 +68,10 @@ In the current study, children ages 4-8 were introduced to a younger fictional c
 # Method
 
 ```{r}
-kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1)
+kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1) %>%
+    mutate(age = if_else(age == "adult", "Adults", age)) 
 
-kid_n <- kidaoa_data %>% filter(age != "adult") %>% distinct(id) %>% nrow(.)
+kid_n <- kidaoa_data %>% filter(age != "Adults") %>% distinct(id) %>% nrow(.)
 ```
 
 ### Stimuli
@@ -112,22 +110,21 @@ The experimenter provided no evaluative feedback on any trials, but did offer co
 The adult participants completed a minimally adapted version of the same task online via Qualtrics. Unlike children, adults were simply presented with the full 6-point scale (1 - *very sure Sam doesn't know* to 6 - *very sure Sa does know*). Additionally, the task was administered asychronously, so adult participants did not interact with an experimenter or recieve any feedback during the task. Otherwise, the adult task was identical to the child task descirbed above. 
 
 
-```{r overall, fig.width = 3.5, fig.cap = 'Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows).'}
-data_overall <- kidaoa_data %>% 
+```{r overall, fig.width = 3.5, fig.cap = "Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows). The black lines show 95 confidence intervals for each item. The shaded region shows one standard deviation based on a linear regression estimated from the raw data."}
+booted_kid_overall <- kidaoa_data %>% 
   # drop the adults, so it's only kids performance average
-  filter(age != "adult") %>%
+  filter(age != "Adults") %>%
   group_by(word, aoa) %>%
-  summarize(judgment = mean(judgment, na.rm = T))
+  tidyboot_mean(judgment)
 
 #use the raw data to make line and variability
    #points show averages
 overall <- ggplot(kidaoa_data, aes(x = aoa, y = judgment,
                       label = word)) + 
   # geom_jitter() +
-  geom_smooth(method = "lm") +
-  # geom_label_repel(data = data_overall) +
-  geom_label_repel(data = data_overall, point.padding = 0, size = 3,
-        label.padding = .15, label.size = .1) +
+  geom_smooth(method = "lm", fill = "lightblue") +
+  geom_linerange(data = booted_kid_overall, aes(y = empirical_stat, ymin = ci_lower, ymax = ci_upper)) +
+  geom_label(data = booted_kid_overall, size = 2.3, label.size = .1, label.padding = unit(.13, "lines"), aes(y = empirical_stat)) +
   xlab("Adult AoA Estimates") +
   ylab("Children's Judgments") +
   scale_y_continuous(breaks = c(1:6), limit = c(1,6))
@@ -142,7 +139,7 @@ Our primary analyses compare knowledge judgments on our 6-point scale to AoA jud
 
 ```{r model}
 model_data <- kidaoa_data %>%
-  filter(age != "adult") %>%
+  filter(age != "Adults") %>%
   ungroup() %>%
   mutate(age = scale(as.numeric(age), scale = F),
          aoa_std = scale(aoa),
@@ -164,20 +161,18 @@ overall_aoa <- overall_model %>% filter(term == "aoa")
 
 ```{r}
 #adult responses
-adults <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == "adult"))) %>% tidy()
+adults <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == "Adults"))) %>% tidy()
 
 adults_aoa <- adults %>% filter(term == "aoa") %>% mutate(p.value = printp(p.value, digits = 2))
 ```
 
 First, analyzing adults responses on our task, we  the predicted negative effect of AoA on adult’s judgements of the target child's knowledge (see (Figure \ref{fig:development}), $\beta =$ `r adults_aoa$estimate`, $t =$ `r adults_aoa$statistic`, $p$ `r adults_aoa$p.value`). This provides a simple sanity check that our task is eliciting reliable predictions from adults, that match predictions from AoA estimation tasks (e.g., Kuperman et al., 2012). 
 
-Do children’s judgments about a child’s vocabulary knowledge also reflect a sensitivity to which words are learned later? To answer this quetion looking at children's responses overall, we ran the model with no age term and see a significant negative effect of AoA on children’s judgements ($\beta =$ `r overall_aoa$estimate`, $t =$ `r overall_aoa$statistic`, $p$ `r overall_aoa$p.value`). That is, overall, children judged that the target child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see (Figure \ref{fig:overall})).
-
 ```{r development, fig.env = "figure*", fig.width = 7, fig.height = 3, fig.cap = 'Children’s judgements across development. Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments, split by age in years.'}
-data_by_age <- kidaoa_data %>% 
-  mutate(word = substr(word, 0, 3)) %>%
+boot_by_age <- kidaoa_data %>% 
+  # mutate(word = substr(word, 0, 3)) %>%
   group_by(age, word, aoa) %>%
-  summarize(judgment = mean(judgment, na.rm=T))
+  tidyboot_mean(judgment)
 
 #use the raw data to make line and variability
    #points show averages by age
@@ -185,8 +180,11 @@ development <- ggplot(kidaoa_data, aes(x = aoa, y = judgment, group = age,
                       label = word)) + 
   # # if we want to add raw data
   # geom_jitter(color = "grey" , alpha = .5) +
-  geom_smooth(method = "lm") +
-  geom_point(data = data_by_age) +
+  geom_smooth(method = "lm", fill = "lightblue") +
+  geom_linerange(data = boot_by_age, color = "black", alpha = .4,
+                  aes(y=empirical_stat, ymin = ci_lower, ymax= ci_upper)) +
+  geom_point(data = boot_by_age, size = 1.5, color = "black", alpha = .75,
+                  aes(y=empirical_stat)) +
   # a bit hard to see on this plot if we use labels, suggest we use regular points instead
   facet_grid(.~age) + 
   xlab("Adult AoA Estimates") +
@@ -215,6 +213,7 @@ dev_age <- dev_model %>% filter(term == "age")
 dev_interaction <- dev_model %>% filter(term == "aoa:age")
 ```
 
+Do children’s judgments about a child’s vocabulary knowledge also reflect a sensitivity to which words are learned later? To answer this quetion looking at children's responses overall, we ran the model with no age term and see a significant negative effect of AoA on children’s judgements ($\beta =$ `r overall_aoa$estimate`, $t =$ `r overall_aoa$statistic`, $p$ `r overall_aoa$p.value`). That is, overall, children judged that the target child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see (Figure \ref{fig:overall})).
 
 To test for developmental changes in children’s responses, we used the same mixed effects model but included an effect of age and an interaction between AoA and age. Our model syntax was `judgment ~ aoa * age + (1 | participant) + (1|word)`.  We expected that older children’s judgments would more closely reflect word-level AoA data, yielding a significant interaction between AoA and child’s age. That is, when plotting children’s judgments against adult AoA estimates, older children would show steeper negative slopes than younger children. Again, our model shows the same main effect of aoa that we saw in the overall model ($\beta =$ `r dev_aoa$estimate`, $t =$ `r dev_aoa$statistic`, $p$ `r dev_aoa$p.value`). We also see a positive main effect of children's age on their ratings ($\beta =$ `r dev_age$estimate`, $t =$ `r dev_age$statistic`, $p$ `r dev_age$p.value`). Crucially, we see our expected interaction between child's age and adult's estimated AoA ($\beta =$ `r dev_interaction$estimate`, $t =$ `r dev_interaction$statistic`, $p$ `r dev_interaction$p.value`), suggesting that children's judgements are becoming more adult-like in this age range (Figure \ref{fig:development}).
 
@@ -225,7 +224,7 @@ fives <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% fi
 sixes <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 6)))
 sevens <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 7)))
 eights <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == 8))) %>% tidy()
-adults <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == "adult"))) %>% tidy()
+adults <- (lmer(judgment ~ aoa + (1 | id) + (1 | word), data = kidaoa_data %>% filter(age == "Adults"))) %>% tidy()
 
 #fours are weakest, so we'll report that as such
 fours_aoa <- fours %>% filter(term == "aoa") %>% mutate(p.value = printp(p.value, digits = 2))
@@ -265,9 +264,9 @@ Our ability to track other people’s knowledge is crucial for successful commun
 
 In line with Walley and Metsala (1992), our findings indicate that even young children have surprising metalinguistic knowledge--they are sensitive to which animal words are acquired earlier versus later, even though the animal words used in our study are generally learned within a 6-month period. Our study also builds upon the extant literature on children’s inferences about other people’s knowledge to show that children infer others’ specific, lexical knowledge. When given fairly minimal information about a fictional child, children readily make estimates about that child’s lexical knowledge. 
 
-The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. Young children struggle in a variety of communicative tasks (e.g. Krauss & Glucksberg, 1977), and the current work can begin to map out whether such difficulties stem from tracking an interlocutor’s knowledge, or may stem from problems using that information to adjust language production. By at least age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state, when the knowledge state is salient and explicit for each item (Baer & Friedman, 2018). Based on our findings that children can reason about others’ specific knowledge, we can ask whether children’s adaptations extend to the level of lexical knowledge-- Do children adjust the way they talk about a referent based on their beliefs about a partners’ knowledge of that word?
-
 How are children in our study making estimates about other people’s knowledge? One limitation of the current study is that it leaves the mechanisms underlying such estimates unclear. Children’s own explanations suggest that they use various cues to make their estimates, mostly appealing to [age/language/experience?]. When making judgments about someone else’s vocabulary knowledge, children use information about the person, as well as general knowledge about the word and its referent to inform their estimations. Future should could more directly probe the features underlying this inference-- to see if children are relying on their own uncertainty, word length (and other linguistic cues), features of the referent itself, or still other features.
+
+The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. Young children struggle in a variety of communicative tasks (e.g. Krauss & Glucksberg, 1977), and the current work can begin to map out whether such difficulties stem from tracking an interlocutor’s knowledge, or may stem from problems using that information to adjust language production. By at least age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state, when the knowledge state is salient and explicit for each item (Baer & Friedman, 2018). Based on our findings that children can reason about others’ specific knowledge, we can ask whether children’s adaptations extend to the level of lexical knowledge-- Do children adjust the way they talk about a referent based on their beliefs about a partners’ knowledge of that word?
 
 
 
