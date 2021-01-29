@@ -426,6 +426,7 @@ prop <- exp_1 %>%
 
 ggplot(prop, aes(x = reorder(exp, value), y = value, fill = exp)) + 
   geom_bar(stat = "identity") +
+  coord_flip() +
   labs(x = "Explanation", y = "Proportion")
 
 
