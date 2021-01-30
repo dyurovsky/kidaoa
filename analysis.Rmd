@@ -398,6 +398,13 @@ explanations <- bind_rows(exp_1, exp_2) %>%
   group_by(ID, why) %>%
   summarise_all(sum)
 
+disagreement <- explanations %>%
+  ungroup %>%
+  select(-ID) %>%
+  filter_all(any_vars(grepl("1", .)))
+
+write.csv(disagreement, here("kid_data/disagreement.csv"))
+
 irr <- explanations %>%
   ungroup %>%
   select(-c(ID, why))

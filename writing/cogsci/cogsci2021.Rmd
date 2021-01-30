@@ -73,6 +73,9 @@ kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% sel
     mutate(age = if_else(age == "adult", "Adults", age)) 
 
 kid_n <- kidaoa_data %>% filter(age != "Adults") %>% distinct(id) %>% nrow(.)
+
+explanations <- read_csv(here("kid_data/explanations_coded_AL.csv"))
+explanations[is.na(explanations)] <- 0
 ```
 
 ### Stimuli
@@ -247,7 +250,18 @@ To test the robustness of this intuition at each age, we ran the above model sep
 ### Explanations
 
 ```{r explanations}
+#descriptive stats for explanations
+prop <- explanations %>%
+  select(-c(ID, why)) %>%
+  summarise_all(mean) 
 
+prop %>%
+  pivot_longer(c(age, experience, language, location, `don't know`, other), 
+               names_to = "exp") %>%
+  ggplot(aes(x = reorder(exp, value), y = value, fill = exp)) + 
+  geom_bar(stat = "identity") +
+  #coord_flip() +
+  labs(x = "Explanation", y = "Proportion")
 
 ```
 
@@ -256,6 +270,8 @@ As a secondary analysis, we were also interested in the reasons young children g
 *Language* reflects explanations that explicitly appealed to language properties. *Experience* reflects explanations that appeal to the child's real-world experience with the referent. *Location* reflects explanations that specifically reference a particular place the animal is associated with. *Age* reflects explanations that reference a particular age or general age-group. Any child that failed to answer the explanation question or expressed ignorance was coded as giving an explanation of *Unsure*. An explanation that didn't fall into any of the above category was coded as *Other*. Note that coding was not mutually-exclusive, so explanations could be coded as including multiple categories. See Table \ref{tab:explanations_table} for examples of each coding category.
 
 [**add explanation descriptives,** and by age]
+
+Of the five types of explanations, *Language* was used by the highest proportion of children (`r prop$language`). *Unsure* and *Other* explanations contributed to just under half of all the explanations. Of the remaining three types, children appealed to *Experience* the most, followed by *Location* and *Age* (see Figure 3). Because coding categories were not mutually exclusive, the proportions do not add to 1. To understand how children's explanations may change over development, we median-split the data into older and younger children. We find that older child [**what older kids did**], and younger children [**what younger kids did**].
 
 ```{r explanations_table, results="asis", tab.env = "table"}
 tab <- tibble(Category = c("Language", "Experience", "Location", "Age", "Unsure", "Other"),
