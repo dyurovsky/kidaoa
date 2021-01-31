@@ -59,7 +59,7 @@ Adults track and adapt to their conversational partners’ knowledge with relati
 
 In a large-scale study, @kuperman2012 asked adult participants to report the age at which they understood a given word and obtained judgments for 30,000 English words. These judgments were then directly compared with data on average age of acquisition, the typical age that a given word is actually learned (hereafter referred to as AoA). Adults typically overestimate the absolute age at which they learned a given word; however, the estimated order in which words are acquired is intact [@kuperman2012]. Adults, even adults without children, are able to make graded and surprisingly accurate relative estimates of when a word was learned.
 
-Can children use this same kind of information to predict whether others will know words? Pre-school age children are able to infer other people’s knowledge from relatively sparse information, inferring knowledgeability based on age, expertise, and more (Jaswal & Neely, 2009; Lutz & Keil, 2002). Furthermore, children are able to ascribe different levels of general knowledge to an infant, preschool child, and an adult (Fitneva, 2010; Taylor, Cartwright, & Bowden, 1991). By at least age 6, children also understand that there are even some topics where children may know more than adults, such as toys or children's television (Fitneva, 2010; VanderBorght & Jaswal, 2009). 
+Can children use this same kind of information to predict whether others will know words? Pre-school age children are able to infer other people’s knowledge from relatively sparse information, such inferring knowledgeability based on age or expertise (Jaswal & Neely, 2009; Lutz & Keil, 2002). Further, children ascribe different levels of general knowledge to infants, preschool children, and adults (Fitneva, 2010; Taylor, Cartwright, & Bowden, 1991). By at least age 6, children understand that there are even some topics where children may know more than adults, such as toys or children's television (Fitneva, 2010; VanderBorght & Jaswal, 2009). 
 
 However, reasoning about another person’s specific lexical knowledge may prove difficult for young children as they also show consistent errors in reasoning about other’s knowledge, commonly over-attributing knowledge (e.g., Gopnik & Astington, 1988; Taylor, Esbensen, & Bennett, 1994). The bias to over-attribute knowledge is particularly pronounced when the child themselves knows the piece of information (Birch & Bloom, 2003; Ghrear et al., 2020). 
 
@@ -99,7 +99,7 @@ grid::grid.raster(img)
 ```
 
 
-*Introduction.* Children were shown a picture of a child named “Sam” (seen in Figure \ref{fig:task-method}). Children were anchored to Sam’s knowledge of various familiar skills, specifically some skills that Sam has acquired (e.g., coloring), and some that Sam has not yet acquired (e.g., reading). Children are then specifically anchored to Sam’s possible word knowledge in an unrelated domain-- given an example of one word Sam knows (*car*), and one word that Sam doesn’t know (*piano*). This introduction is intended to familiarize the children with Sam, roughly anchor them to Sam’s knowledge and age, and to ensure that children understand there are things Sam doesn’t know yet (even things children themselves likely know, such as how to read).
+*Introduction.* Children were shown a picture of a child named “Sam” (seen in Figure \ref{fig:task-method}). Children were anchored to Sam’s knowledge of various familiar skills, specifically some skills that Sam has acquired (e.g., coloring), and some that Sam has not yet acquired (e.g., reading). Children are then specifically anchored to Sam’s possible word knowledge in an unrelated domain-- given an example of one whord Sam knows (*car*), and one word that Sam doesn’t know (*piano*). This introduction is intended to familiarize the children with Sam, roughly anchor them to Sam’s knowledge and age, and to ensure that children understand there are things Sam doesn’t know yet (even things children themselves likely know, such as how to read).
 
 *General trial structure.* At each trial, children were shown a drawing of a familiar object or animal [@rossion2004]. The experimenter first labelled the object for the child (e.g., saying “Look, it’s [an elephant]!), and then asked the target child's knowledge (e.g., saying, "Do you think Sam knows that this is called [an elephant]? Yes or no?”). Based on their response, children are then asked a follow-up question: “How sure are you that Sam [knows/doesn’t know] that this is called [an elephant]-- a little sure, medium sure, or very sure?” All questions were presented with accompanying pictures of thumbs [up/down] of varying size (see Figure \ref{fig:task-method}). Children as young as 3 are able to engage in uncertainty monitoring and report confidence, although these skills do develop in the preschool years (Lyons & Ghetti, 2011). Children’s responses to these two items were recoded onto a 1-6 scale from 1-very sure Sam doesn’t know to 6-very sure Sam knows. All trials followed this general structure.
 
@@ -250,7 +250,6 @@ To test the robustness of this intuition at each age, we ran the above model sep
 ### Explanations
 
 ```{r}
-
 #descriptive stats for explanations
 exp <- explanations %>%
   select(-c(ID, why)) 
@@ -259,7 +258,6 @@ exp[is.na(exp)] <- 0
 
 prop <- exp %>%
   summarise_all(mean)
-
 ```
 
 
@@ -268,8 +266,8 @@ As a secondary analysis, we were also interested in the reasons young children g
 
 *Language* reflects explanations that explicitly appealed to language properties. *Experience* reflects explanations that appeal to the child's real-world experience with the referent. *Location* reflects explanations that specifically reference a particular place the animal is associated with. *Age* reflects explanations that reference a particular age or general age-group. Any child that failed to answer the explanation question or expressed ignorance was coded as giving an explanation of *Unsure*. An explanation that didn't fall into any of the above category was coded as *Other*. Note that coding was not mutually-exclusive, so explanations could be coded as including multiple categories. See Table \ref{tab:explanations_table} for examples of each coding category.
 
-```{r explanations,fig.env = "figure*", fig.cap = "Children's explanations for why they think Sam knew/didn't know an animal. Categories are not mutually exclusive."}
-
+```{r explanations, fig.cap = "Children's explanations for why they think Sam knew/didn't know an animal. Categories are not mutually exclusive."}
+# "Children's explanations for why they think Sam knew/didn't know an animal. Categories are not mutually exclusive."
 exp_plot <- prop %>%
   pivot_longer(c(age, experience, language, location, unsure, other), 
                names_to = "exp") %>%
@@ -278,7 +276,7 @@ exp_plot <- prop %>%
   theme(legend.position = "none") +
   labs(x = "Explanation", y = "Proportion")
 
-print(exp_plot, fig.align = "right", fig.pos="t", 
+print(exp_plot, fig.pos="t",
       environment = "figure*")
 
 ```
