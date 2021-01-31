@@ -75,7 +75,7 @@ kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% sel
 kid_n <- kidaoa_data %>% filter(age != "Adults") %>% distinct(id) %>% nrow(.)
 
 explanations <- read_csv(here("kid_data/explanations_coded_AL.csv"))
-explanations[is.na(explanations)] <- 0
+
 ```
 
 ### Stimuli
@@ -252,9 +252,13 @@ To test the robustness of this intuition at each age, we ran the above model sep
 ```{r}
 
 #descriptive stats for explanations
-prop <- explanations %>%
-  select(-c(ID, why)) %>%
-  summarise_all(mean) 
+exp <- explanations %>%
+  select(-c(ID, why)) 
+
+exp[is.na(exp)] <- 0
+
+prop <- exp %>%
+  summarise_all(mean)
 
 ```
 
@@ -264,24 +268,26 @@ As a secondary analysis, we were also interested in the reasons young children g
 
 *Language* reflects explanations that explicitly appealed to language properties. *Experience* reflects explanations that appeal to the child's real-world experience with the referent. *Location* reflects explanations that specifically reference a particular place the animal is associated with. *Age* reflects explanations that reference a particular age or general age-group. Any child that failed to answer the explanation question or expressed ignorance was coded as giving an explanation of *Unsure*. An explanation that didn't fall into any of the above category was coded as *Other*. Note that coding was not mutually-exclusive, so explanations could be coded as including multiple categories. See Table \ref{tab:explanations_table} for examples of each coding category.
 
-[**add explanation descriptives,** and by age]
-
-Of the 6 types of explanations, *Language* was used by the highest proportion of children (`r prop$language*100`%). *Unsure* and *Other* explanations contributed to just under half of all the explanations (`r prop$don't know*100 + prop$other*100`%). Of the remaining three types, children appealed to *Experience* the most (`r prop$experience*100`%), followed by *Location* (`r prop$experience*100`%) and *Age* (`r prop$age*100`%; see \ref{fig:explanations}). Because coding categories were not mutually exclusive, the proportions do not add to 1. To understand how children's explanations may change over development, we median-split the data into older and younger children. We find that older child [**what older kids did**], and younger children [**what younger kids did**].
-
 ```{r explanations,fig.env = "figure*", fig.cap = "Children's explanations for why they think Sam knew/didn't know an animal. Categories are not mutually exclusive."}
 
-prop %>%
-  pivot_longer(c(age, experience, language, location, `don't know`, other), 
+exp_plot <- prop %>%
+  pivot_longer(c(age, experience, language, location, unsure, other), 
                names_to = "exp") %>%
   ggplot(aes(x = reorder(exp, value), y = value, fill = exp)) + 
   geom_bar(stat = "identity") +
-  #coord_flip() +
+  theme(legend.position = "none") +
   labs(x = "Explanation", y = "Proportion")
 
-print(explanations, fig.align = "right", fig.pos="t", 
+print(exp_plot, fig.align = "right", fig.pos="t", 
       environment = "figure*")
 
 ```
+
+[**add explanation descriptives,** and by age]
+
+Of the 6 types of explanations, *Language* was used by the highest proportion of children (`r prop$language*100`%). *Unsure* and *Other* explanations contributed to just under half of all the explanations (`r prop$unsure*100`% and `r prop$other*100`% respectively). Of the remaining three types, children appealed to *Experience* the most (`r prop$experience*100`%), followed by *Location* (`r prop$experience*100`%) and *Age* (`r prop$age*100`%; see Figure \ref{fig:explanations}). Because coding categories were not mutually exclusive, the proportions do not add to 1. To understand how children's explanations may change over development, we median-split the data into older and younger children. We find that older child [**what older kids did**], and younger children [**what younger kids did**].
+
+
 
 ```{r explanations_table, results="asis", tab.env = "table"}
 tab <- tibble(Category = c("Language", "Experience", "Location", "Age", "Unsure", "Other"),
@@ -316,7 +322,7 @@ Our findings indicate that young children have surprising metalinguistic knowled
 How are children in our study making estimates about other people’s knowledge? One limitation of the current study is that it leaves the mechanisms underlying such estimates unclear. Children’s own explanations suggest that they use various cues to make their estimates, mostly appealing to [age/language/experience?]. [**adult work?**]. Future should could more directly probe the features underlying this inference-- to see if children are relying on their own uncertainty, word length (and other linguistic cues), features of the referent itself, or still other features.
 
 
-The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. Young children struggle in a variety of communicative tasks [e.g. @krauss1977], and the current work can begin to map out whether such difficulties stem from tracking an interlocutor’s knowledge, or may stem from problems using that information to adjust language production. By at least age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state, when the knowledge state is salient and explicit for each item [@baer2015]. Based on our findings that children can reason about others’ specific knowledge, we can ask whether children’s adaptations extend to the level of lexical knowledge-- Do children adjust the way they talk about a referent based on their beliefs about a partners’ knowledge of that word?
+The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. Young children struggle in a variety of communicative tasks [e.g. @krauss1977], and the current work can begin to map out whether such difficulties stem from tracking an interlocutor’s knowledge, or may stem from problems using that information to adjust language production. By at least age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state, when the knowledge state is salient and explicit for each item [@baer2018]. Based on our findings that children can reason about others’ specific knowledge, we can ask whether children’s adaptations extend to the level of lexical knowledge-- Do children adjust the way they talk about a referent based on their beliefs about a partners’ knowledge of that word?
 
 
 \vspace{1em} \fbox{\parbox[b][][c]{7.3cm}{\centering Stimuli, data, and analysis code available after deanonymization.}}
