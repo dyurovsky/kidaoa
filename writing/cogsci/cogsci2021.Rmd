@@ -244,6 +244,33 @@ fours_aoa <- fours %>% filter(term == "aoa") %>% mutate(p.value = printp(p.value
 adults_aoa <- adults %>% filter(term == "aoa") %>% mutate(p.value = printp(p.value, digits = 2))
 ```
 
+```{r}
+age_terms <- kidaoa_data %>%
+  group_by(age) %>%
+  nest() %>%
+  mutate(model = map(data, ~lmer(judgment ~ aoa + (1 | id) + (1 | word), 
+                                 data = .x) %>% tidy())) %>%
+  select(-data) %>%
+  unnest(cols = c(model)) %>%
+  filter(term == "aoa") %>%
+  mutate(type = if_else(age == "Adults", "Adult", "child"),
+         age_numeric = as.numeric(age),
+         age_numeric = if_else(is.na(age_numeric), 9, age_numeric))
+
+age_term_annotations <- tibble(age_numeric = c(5, 9),
+                               estimate = -.35, -.35,
+                               plot_label = c("Children", "Adults"),
+                               type = c("child", "Adult"))
+
+ggplot(age_terms, aes(x = age_numeric, y = estimate, color = type,
+                      group = type)) + 
+  geom_pointrange(aes(ymin = estimate - std.error, ymax = estimate + 
+                        std.error)) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme(legend.position = "none") +
+  geom_text(aes(label = plot_label), data = age_term_annotations)
+  
+```
 
 To test the robustness of this intuition at each age, we ran the above model separately for each year-wise age group. While we see evidence of developmental change above, this additional analysis helps us understand if even young children are showing this intuition. We found a significant negative effect of AoA on children’s judgments at all age groups (with the smallest effect in 4-year-olds: $\beta =$ `r fours_aoa$estimate`, $t =$ `r fours_aoa$statistic`, $p =$ `r fours_aoa$p.value`). That is, even 4-year-old children judged that late-acquired animal words were less likely to be known by the target child.
 
