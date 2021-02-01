@@ -360,6 +360,27 @@ exp[is.na(exp)] <- 0
 
 prop <- exp %>%
   summarise_all(mean)
+
+ages <- kidaoa_data %>%
+  filter(age != "Adults") %>%
+  select(age, db_id) %>%
+  distinct(db_id, .keep_all = T) %>%
+  rename(ID = db_id,
+         kid_age = age) %>%
+  merge(explanations, by = "ID") %>%
+  select(-why) %>%
+  mutate(group = if_else(kid_age < 6, "Younger", "Older"))
+
+ages[is.na(ages)] <- 0
+
+split_age <- ages %>%
+  group_by(group) %>%
+  summarise_at(c("age", "experience", "location", "language", "unsure", "other"), mean)
+
+each_age <- ages %>%
+  group_by(kid_age) %>%
+  summarise_at(c("age", "experience", "location", "language", "unsure", "other"), mean)
+
 ```
 
 
@@ -406,7 +427,9 @@ print(exp_plot, fig.pos="tb",
 ```
 
 
-Of the 6 types of explanations, *Language* was used by the highest proportion of children (`r prop$language*100`%). *Unsure* and *Other* explanations contributed to just under half of all the explanations (`r prop$unsure*100`% and `r prop$other*100`% respectively). Of the remaining three types, children appealed to *Experience* the most (`r prop$experience*100`%), followed by *Location* (`r prop$location*100`%) and *Age* (`r prop$age*100`%; see Figure \ref{fig:explanations}). Note that because coding categories were not mutually exclusive, the proportions sum to greater than 1. To understand how children's explanations may change over development, we median-split the data into older and younger children. We find that older child [**what older kids did**], and younger children [**what younger kids did**].
+Of the 6 types of explanations, *Language* was used by the highest proportion of children (`r prop$language*100`%). *Unsure* and *Other* explanations contributed to just under half of all the explanations (`r prop$unsure*100`% and `r prop$other*100`% respectively). Of the remaining three types, children appealed to *Experience* the most (`r prop$experience*100`%), followed by *Location* (`r prop$location*100`%) and *Age* (`r prop$age*100`%; see Figure \ref{fig:explanations}). Note that because coding categories were not mutually exclusive, the proportions sum to greater than 1. To understand how children's explanations may change over development, we looked at explanations in each age group. Perhaps unsurprisingly, *Unsure* explanations were more common in younger children, accounting for over half (`r each_age$unsure[1]*100`%) of the 4-year-olds' explanations. 
+
+Almost half of the 7- and 8-year-olds appealed to *Language* explanations (`r each_age$language[4]*100`% and `r each_age$language[5]*100`%). Surprisingly, 5-year-olds were also likely to use *Language* explanations (`r each_age$language[2]*100`%), while this type of explanation was rarely used by 4- and 6-year-olds.
 
 [**add elaboration about what we make of the pattern of explanations, here or in discussion**]
 
@@ -416,7 +439,7 @@ Our ability to infer other people’s knowledge is crucial for successful commun
 
 Our findings indicate that young children have surprising metalinguistic knowledge, and can use that knowledge to make highly-specific inferences about other people's knowledge. The animal words used in our study are generally learned within a 6-month period, yet young children could still distinguish early-acquired words from late-acquired words in this set. Our study also builds upon the extant literature on children’s inferences about other people’s knowledge to show that children infer others’ specific, lexical knowledge. When given fairly minimal information about another child, children readily make estimates about that child’s lexical knowledge. 
 
-How are children in our study making estimates about other people’s knowledge? One limitation of the current study is that it leaves the mechanisms underlying such estimates unclear. Children’s own explanations suggest that they use various cues to make their estimates, mostly appealing to [age/language/experience?]. [**adult work?**]. Future should could more directly probe the features underlying this inference-- to see if children are relying on their own uncertainty, word length (and other linguistic cues), features of the referent itself, or still other features.
+How are children in our study making estimates about other people’s knowledge? Children’s own explanations suggest that they use various cues to make their estimates. Language-related explanations were used by the highest proportion of children, suggesting that even young children rely on metalinguistic knowledge to make inferences about others. [**adult work?**]. One limitation of the current study is that it leaves the mechanisms underlying such estimates unclear. Future work should could more directly probe the features underlying this inference-- to see if children are relying on their own uncertainty, word length (and other linguistic cues), features of the referent itself, or still other features.
 
 The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. Young children struggle in a variety of communicative tasks [e.g. @krauss1977], and the current work can begin to map out whether such difficulties stem from tracking an interlocutor’s knowledge, or may stem from problems using that information to adjust language production. By at least age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state, when the knowledge state is salient and explicit for each item [@baer2018]. Based on our findings that children can reason about others’ specific knowledge, we can ask whether children’s adaptations extend to the level of lexical knowledge-- Do children adjust the way they talk about a referent based on their beliefs about a partners’ knowledge of that word?
 

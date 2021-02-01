@@ -54,6 +54,21 @@
 
 \title{Children's understanding of others' lexical knowledge}
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
 
 
 \begin{document}
@@ -141,13 +156,13 @@ pronounced when the child themselves knows the piece of information
 (Birch \& Bloom, 2003; Ghrear, Fung, Haddock, \& Birch, 2020).
 
 We ask how children infer another children's lexical knowledge, and
-specifically whether they make word-level predicitons in line with
+specifically whether they make word-level predictions in line with
 expected AoA. Children at least as young as 5 can make metalinguistic
-judgments about their own vocabulary knowledge, reporting the relative
-age at which they learned a variety of words (Walley \& Metsala, 1992).
-In our study, we introduced 4- to 8-year-old children to a younger
-fictional child, and asked them to make judgments about the target
-child's knowledge of various familiar words. We find that even
+judgments about their own vocabulary knowledge, accurately estimating
+the age and order in which they learned a variety of words (Walley \&
+Metsala, 1992). In our study, we introduced 4- to 8-year-old children to
+a younger fictional child, and asked them to make judgments about the
+target child's knowledge of various familiar words. We find that even
 4-year-olds make accurate inferences about the target child's knowledge,
 and that older children's responses more closely correlate with adult
 judgments of AoA.
@@ -370,6 +385,10 @@ expected interaction between child's age and adult's estimated AoA
 that children's judgements are becoming more adult-like in this age
 range (Figure \ref{fig:development}).
 
+\begin{CodeChunk}
+
+\includegraphics{figs/unnamed-chunk-6-1} \end{CodeChunk}
+
 To test the robustness of this intuition at each age, we ran the above
 model separately for each year-wise age group. While we see evidence of
 developmental change above, this additional analysis helps us understand
@@ -488,13 +507,18 @@ proportion of children (27.27\%). \emph{Unsure} and \emph{Other}
 explanations contributed to just under half of all the explanations
 (22.73\% and 21.21\% respectively). Of the remaining three types,
 children appealed to \emph{Experience} the most (15.15\%), followed by
-\emph{Location} (15.15\%) and \emph{Age} (6.06\%; see Figure
+\emph{Location} (10.61\%) and \emph{Age} (6.06\%; see Figure
 \ref{fig:explanations}). Note that because coding categories were not
 mutually exclusive, the proportions sum to greater than 1. To understand
-how children's explanations may change over development, we median-split
-the data into older and younger children. We find that older child
-{[}\textbf{what older kids did}{]}, and younger children {[}\textbf{what
-younger kids did}{]}.
+how children's explanations may change over development, we looked at
+explanations in each age group. Perhaps unsurprisingly, \emph{Unsure}
+explanations were more common in younger children, accounting for over
+half (58.33\%) of the 4-year-olds' explanations.
+
+Almost half of the 7- and 8-year-olds appealed to \emph{Language}
+explanations (41.67\% and 45.45\%). Surprisingly, 5-year-olds were also
+likely to use \emph{Language} explanations (38.46\%), while this type of
+explanation was rarely used by 4- and 6-year-olds.
 
 {[}\textbf{add elaboration about what we make of the pattern of
 explanations, here or in discussion}{]}
@@ -523,18 +547,20 @@ information about another child, children readily make estimates about
 that child's lexical knowledge.
 
 How are children in our study making estimates about other people's
-knowledge? One limitation of the current study is that it leaves the
-mechanisms underlying such estimates unclear. Children's own
-explanations suggest that they use various cues to make their estimates,
-mostly appealing to {[}age/language/experience?{]}. {[}\textbf{adult
-work?}{]}. Future should could more directly probe the features
-underlying this inference-- to see if children are relying on their own
-uncertainty, word length (and other linguistic cues), features of the
-referent itself, or still other features.
+knowledge? Children's own explanations suggest that they use various
+cues to make their estimates. Language-related explanations were used by
+the highest proportion of children, suggesting that even young children
+rely on metalinguistic knowledge to make inferences about others.
+{[}\textbf{adult work?}{]}. One limitation of the current study is that
+it leaves the mechanisms underlying such estimates unclear. Future work
+should could more directly probe the features underlying this
+inference-- to see if children are relying on their own uncertainty,
+word length (and other linguistic cues), features of the referent
+itself, or still other features.
 
 The current work lays the foundation for future research on how children
 leverage their knowledge of other people to communicate successfully.
-Young children struggle in a variety of communicative tasks (e.g. Krauss
+Young children struggle in a variety of communicative tasks (e.g.~Krauss
 \& Glucksberg, 1977), and the current work can begin to map out whether
 such difficulties stem from tracking an interlocutor's knowledge, or may
 stem from problems using that information to adjust language production.
