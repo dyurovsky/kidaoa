@@ -7,7 +7,7 @@ document-params: "10pt, letterpaper"
 author-information: > 
 
 abstract: > 
-    In conversation, if you want to be understood without being overly informative, you need to figure out what the other person knows, and what they do not know. For young children to become effective communicators then, they must learn to infer and update what others are likely to know. We asked children ages 4-8 (*n* = 62) to make specific predictions about whether a very young child would know 15 familiar animal words, all typically acquired within a 6-month range. With minimal information about the target child, children as young as 4 years old inferred that the target child would be more likely to know easier, earlier-acquired words (e.g., *dog*) and less likely to know harder, later-acquired words (e.g., *lobster*). These inferences were increasingly strong across the tested age-range, and older children also offered [more sophisticated explanations for the child's knowledge]. Even preschool-age children make rich inferences about another agent's lexical knowledge, reflecting robust metalinguisitc knowledge about when particular words are learned.
+    In conversation, you want to be understood without being unnecessarily informative. To do so, you need to figure out what the other already person knows, and what they do not know. For young children to become effective communicators then, they must learn to infer and update what others are likely to know. In our study, we asked children ages 4-8 (*n* = 62) to make specific predictions about whether a very young child would know 15 familiar animal words, all typically acquired within a 6-month range. With minimal information about the target child, children as young as 4 years old inferred that the target child would be more likely to know easier, earlier-acquired words (e.g., *dog*) and less likely to know harder, later-acquired words (e.g., *lobster*). These inferences were strengthened across the tested age-range, and older children also offered [more sophisticated explanations for the child's knowledge]. In sum, even preschool-age children make rich inferences about another agent's lexical knowledge, capitalizing on robust metalinguisitc knowledge about when particular words are likely learned.
  
     <!-- To transmit information effecitvely, it needs to be understandable. To transmit information efficiently, you should choose the minimal words you need to express your meaning.  -->
 
@@ -15,7 +15,7 @@ abstract: >
   
 
 keywords: >
-    communication, metalinguistics, knowledge reasoning, cognitive development
+    communication, metalinguistic, knowledge reasoning, cognitive development
     
 output: cogsci2016::cogsci_paper
 # final-submission:  \cogscifinalcopy
@@ -71,6 +71,8 @@ We ask how children infer another children’s lexical knowledge, and specifical
 ```{r}
 kidaoa_data <- read_csv(here("clean_data/kidaoa_clean_with_adults.csv")) %>% select(-X1) %>%
     mutate(age = if_else(age == "adult", "Adults", age)) 
+
+secondary_kidaoa_data <- read_csv(here("clean_data/supp_kid_data.csv"))
 
 kid_n <- kidaoa_data %>% filter(age != "Adults") %>% distinct(id) %>% nrow(.)
 
@@ -246,7 +248,78 @@ adults_aoa <- adults %>% filter(term == "aoa") %>% mutate(p.value = printp(p.val
 To test the robustness of this intuition at each age, we ran the above model separately for each year-wise age group. While we see evidence of developmental change above, this additional analysis helps us understand if even young children are showing this intuition. We found a significant negative effect of AoA on children’s judgments at all age groups (with the smallest effect in 4-year-olds: $\beta =$ `r fours_aoa$estimate`, $t =$ `r fours_aoa$statistic`, $p =$ `r fours_aoa$p.value`). That is, even 4-year-old children judged that late-acquired animal words were less likely to be known by the target child.
 
 
-[**add results in brief about non-target questions, e.g., skills knowledge**]
+```{r}
+#familiarization trials
+training_data <- secondary_kidaoa_data %>% filter(word %in% c('ball', 'artichoke'))
+training_age_average <- training_data %>% 
+  group_by(age, word) %>% 
+  tidyboot_mean(judgment)
+
+training_overall_average <- training_data %>% 
+  group_by(word) %>% 
+  tidyboot_mean(judgment)
+ball <- training_overall_average %>% filter(word == "ball") %>% pull(empirical_stat)
+artichoke <- training_overall_average %>% filter(word == "artichoke") %>% pull(empirical_stat)
+
+#model, overall
+training_overall <- lmer(judgment ~ word + (1 | id), data = training_data) %>% tidy() %>%
+  mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordball")
+
+#model, by age
+training_4s <- lmer(judgment ~ word + (1 | id),
+       data = training_data %>% filter(age == 4)) %>% tidy() %>%
+   mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordball")
+
+training_5s <- lmer(judgment ~ word + (1 | id),
+       data = training_data %>% filter(age == 5)) %>% tidy() %>%
+   mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordball")
+```
+
+```{r}
+#skills trials
+skills_data <- secondary_kidaoa_data %>% filter(word %in% c('stairs', 'car'))
+
+skills_overall_average <- skills_data %>% 
+  group_by(word) %>% 
+  tidyboot_mean(judgment)
+car <- skills_overall_average %>% filter(word == "car") %>% pull(empirical_stat)
+stairs <- skills_overall_average %>% filter(word == "stairs") %>% pull(empirical_stat)
+
+#model, overall
+skills_overall <- lmer(judgment ~ word + (1 | id), data = skills_data) %>% tidy() %>%
+  mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordstairs")
+
+#model, by age
+skills_4s <- lmer(judgment ~ word + (1 | id),
+       data = skills_data %>% filter(age == 4)) %>% tidy() %>%
+   mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordstairs")
+```
+
+```{r}
+# inferred age
+inferred_age <- secondary_kidaoa_data %>% filter(word %in% c('infAge')) %>% filter(!is.na(judgment))
+```
+
+
+## Secondary Results
+
+#### Familiarization trials. 
+
+Children completed two familiarization trials asking about the target child's knowledge of two non-animal words (*ball* and *artichoke*). These questions were primarily included to help children get accustomed to the general trial structure. To analyze children's responses on these familiarization items, we used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. 
+
+Overall, children were significantly more likely to report that Sam knows the word "ball" ($mean =$ `r ball`) than that Sam knows the word "artichoke" ($mean =$ `r artichoke`, $\beta =$ `r training_overall$estimate`, $t =$ `r training_overall$statistic`, $p =$ `r training_overall$p.value`). Analyzing judgments separately for each age group, 4-year-olds do not significantly differentiate the two familiarization items ($\beta =$ `r training_4s$estimate`, $t =$ `r training_4s$statistic`, $p =$ `r training_4s$p.value`). All other age groups signifcantly differentiated the two familiarization items ($ps <$ 0.05).
+
+
+#### Skill knowledge. 
+
+We included two questions about the target child's skill knowledge. In the event that children at any age were differentiating the target child's lexical knowledge, these questions were intended primarily as a check that children at all ages were nevertheless able to use the scale appropriately and able to infer knowledge in another domain. Note that the two skill items (*going up and down stairs*, and *driving a car*) are also in line with children's own knowledge, unlike the word items. That is, child participants should be able to answer these questions appropriately even if they are reasoning egocentrically about their own knowledge.
+
+Overall, children differentiated the target child's skill knowledge on these two items. We used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. Children were significantly more likely to report that the child knows how to go up and down stairs ($mean =$ `r stairs`) than that the child knows how to drive a car ($mean =$ `r car`, $\beta =$ `r skills_overall$estimate`, $t =$ `r skills_overall$statistic`, $p =$ `r skills_overall$p.value`). Analyzing judgments separately for each age group, even 4-year-olds were significantly differentiating the two skill item ($\beta =$ `r skills_4s$estimate`, $t =$ `r skills_4s$statistic`, $p =$ `r skills_4s$p.value`).
 
 
 ### Explanations
@@ -263,12 +336,35 @@ prop <- exp %>%
 ```
 
 
+```{r explanations_table, results="asis", tab.env = "table"}
+tab <- tibble(Category = c("Language", " ", "Experience", " ", "Location", " ", "Age", " ", "Unsure", " ", "Other", " "),
+
+              `Example Utterance` = c("Because it was a very long word.",
+                            "Because it only has 3 letters.",
+                            "Because maybe he has a dog.", 
+                            "Because gorillas are really rare animals",
+                            "Because penguins live in the artic and it's too cold for little kids...",
+                            "Because fish swim under the ocean.",
+                            "Because I think I knew that when I was around 3...",
+                            "Because if he went to preschool then he probably knew it...",
+                            "I don't know.",
+                            "I'm not sure.",
+                            "Because it had a longer beak than a bird.",
+                            "Because it's small.")) %>% 
+  xtable(display = c("s", "d", "f"),
+         caption = "Example explanations from child participants for each of the five categories used for coding.",
+         label = "tab:explanations_table")
+
+print(tab, type = "latex", comment = F, table.placement = "tb", floating = TRUE,
+      floating.environment = "table*",
+      include.rownames = FALSE)
+```
 
 As a secondary analysis, we were also interested in the reasons young children gave for why the target child would or would not know a given word. While children sometimes offered spontaneous explanations throughout the study, this analysis focuses on the explanation elicited after the final animal trial. Based on preliminary discussions between the authors, the explanations were divided into 6 non-mutually-exclusive categories: *Language*, *Experience*, *Location*, *Age*, *Unsure*, and *Other*. 
 
 *Language* reflects explanations that explicitly appealed to language properties. *Experience* reflects explanations that appeal to the child's real-world experience with the referent. *Location* reflects explanations that specifically reference a particular place the animal is associated with. *Age* reflects explanations that reference a particular age or general age-group. Any child that failed to answer the explanation question or expressed ignorance was coded as giving an explanation of *Unsure*. An explanation that didn't fall into any of the above category was coded as *Other*. Note that coding was not mutually-exclusive, so explanations could be coded as including multiple categories. See Table \ref{tab:explanations_table} for examples of each coding category.
 
-```{r explanations, fig.cap = "Children's explanations for why they think Sam knew/didn't know an animal. Categories are not mutually exclusive."}
+```{r explanations, fig.cap = "Children's explanations for why they think the target child knew or didn't know an animal. Categories are not mutually exclusive."}
 exp_plot <- prop %>%
   pivot_longer(c(age, experience, language, location, unsure, other), 
                names_to = "exp") %>%
@@ -278,38 +374,13 @@ exp_plot <- prop %>%
   labs(x = "Explanation Type", y = "Proportion") +
   scale_fill_brewer(palette = "Dark2")
 
-print(exp_plot, fig.pos="t",
+print(exp_plot, fig.pos="tb",
       environment = "figure*")
-
 ```
 
 
-Of the 6 types of explanations, *Language* was used by the highest proportion of children (`r prop$language*100`%). *Unsure* and *Other* explanations contributed to just under half of all the explanations (`r prop$unsure*100`% and `r prop$other*100`% respectively). Of the remaining three types, children appealed to *Experience* the most (`r prop$experience*100`%), followed by *Location* (`r prop$experience*100`%) and *Age* (`r prop$age*100`%; see Figure \ref{fig:explanations}). Because coding categories were not mutually exclusive, the proportions do not add to 1. To understand how children's explanations may change over development, we median-split the data into older and younger children. We find that older child [**what older kids did**], and younger children [**what younger kids did**].
+Of the 6 types of explanations, *Language* was used by the highest proportion of children (`r prop$language*100`%). *Unsure* and *Other* explanations contributed to just under half of all the explanations (`r prop$unsure*100`% and `r prop$other*100`% respectively). Of the remaining three types, children appealed to *Experience* the most (`r prop$experience*100`%), followed by *Location* (`r prop$experience*100`%) and *Age* (`r prop$age*100`%; see Figure \ref{fig:explanations}). Note that because coding categories were not mutually exclusive, the proportions sum to greater than 1. To understand how children's explanations may change over development, we median-split the data into older and younger children. We find that older child [**what older kids did**], and younger children [**what younger kids did**].
 
-
-
-```{r explanations_table, results="asis", tab.env = "table"}
-tab <- tibble(Category = c("Language", "Experience", "Location", "Age", "Unsure", "Other"),
-
-              `Example Utterance` = c("Because it was a very long word.",
-                            "Because maybe he has a dog.", 
-                            "Because penguins live in the artic and it's too cold for little kids...",
-                            "Because I think I knew that when I was around 3, I knew what a pig was.",
-                            "I don't know.",
-                            "Because it had a longer beak than a bird.")) %>% 
-  xtable(display = c("s", "d", "f"),
-         caption = "Example explanations from child participants for each of the five categories used for coding.",
-         label = "tab:explanations_table")
-
-print(tab, type = "latex", comment = F, table.placement = "tb", floating = TRUE,
-      floating.environment = "table*",
-      include.rownames = FALSE)
-
- # "becuase it's a hard word"
- #"because they might have it for a pet"
-# "because it lives in the water"
-# "lots of babies don't know about them"
-```
 
 # Discussion
 
