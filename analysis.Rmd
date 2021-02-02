@@ -43,7 +43,8 @@ items <- c("ball", "artichoke", "cat", "dog", "duck", "elephant", "gorilla",
            "snake", "fish", "penguin", "car", "stairs")
 
 mutated_items <- map(items, ~c(glue("{.x}_yes"), glue("{.x}_no"))) %>%
-  unlist()
+  unlist()  %>%
+  append("infAge")
 
 
 # kid data
@@ -54,7 +55,8 @@ tmp <- read_csv(here("kid_data/kid_qualtrics_raw_final.csv")) %>%
   filter(!is.na(Q60)) %>%
   rename(age = Q59, gender = Q60, db_id = ID, exclude = Q61) %>%
   filter(is.na(exclude)) %>%
-  select(db_id, age, gender, all_of(mutated_items), Why) %>%
+  rename(infAge = Q64) %>%
+  select(db_id, age, gender, all_of(mutated_items), Why, infAge) %>%
   mutate(id = row_number()) 
 
 data <- tmp %>%
@@ -72,7 +74,7 @@ word_data <- data %>%
   rename(word = item)
 
 practice_data <- data %>%
-  filter(item %in% c("artichoke", "ball", "car", "stairs")) %>%
+  filter(item %in% c("artichoke", "ball", "car", "stairs", "infAge")) %>%
   rename(word = item) %>%
   filter(!is.na(judgment))
 
@@ -86,12 +88,13 @@ adult_tmp <- read_csv(here("adult_data/aoa_adult_raw_1.15.2021.csv")) %>%
   filter(Finished == "True") %>%
   select(-StartDate:-UserLanguage) %>%
   filter(attn_check == 15) %>%
-  select(all_of(items), Why) %>%
+  rename(infAge = Q64) %>%
+  select(all_of(items), Why, infAge) %>%
   mutate(id = row_number())
 
 adult_data <- adult_tmp[-1:-6,] %>%
   select(-Why) %>%
-  pivot_longer(cols = all_of(items), names_to = "item", 
+  pivot_longer(cols = all_of(c(items, "infAge")), names_to = "item", 
                values_to = "judgment") %>%
   rowwise() %>%
   mutate(item = str_split(item, "_",simplify = TRUE)[1]) %>%
@@ -105,7 +108,7 @@ adult_word_data <- adult_data %>%
   rename(word = item)
 
 adult_practice_data <- adult_data %>%
-  filter(item %in% c("artichoke", "ball", "car", "stairs")) %>%
+  filter(item %in% c("artichoke", "ball", "car", "stairs", "infAge")) %>%
   rename(word = item) %>%
   filter(!is.na(judgment))
 
@@ -116,6 +119,7 @@ kuperman_aoas <- read_csv(here("corpus_data/kuperman_aoas.csv"))
 ```{r}
 #to drop for not answering every question
 toDrop <- data %>% 
+  filter(item != "infAge") %>%
   filter(is.na(judgment)) %>%
   distinct(db_id, id, age)
 
