@@ -142,6 +142,58 @@ print(overall, type = "figure", comment = F, fig.placement = "b", floating = TRU
 
 Children completed two familiarization trials asking about the target child's knowledge of two non-animal words (*ball* and *artichoke*). These questions were primarily included to help children get accustomed to the general trial structure. To analyze children's responses on these familiarization items, we used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. 
 
+```{r}
+#familiarization trials
+training_data <- secondary_kidaoa_data %>% filter(word %in% c('ball', 'artichoke'))
+training_age_average <- training_data %>% 
+  group_by(age, word) %>% 
+  tidyboot_mean(judgment)
+
+training_overall_average <- training_data %>% 
+  group_by(word) %>% 
+  tidyboot_mean(judgment)
+ball <- training_overall_average %>% filter(word == "ball") %>% pull(empirical_stat)
+artichoke <- training_overall_average %>% filter(word == "artichoke") %>% pull(empirical_stat)
+
+#model, overall
+training_overall <- lmer(judgment ~ word + (1 | id), data = training_data) %>% tidy() %>%
+  mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordball")
+
+#model, by age
+training_4s <- lmer(judgment ~ word + (1 | id),
+       data = training_data %>% filter(age == 4)) %>% tidy() %>%
+   mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordball")
+
+training_5s <- lmer(judgment ~ word + (1 | id),
+       data = training_data %>% filter(age == 5)) %>% tidy() %>%
+   mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordball")
+```
+
+```{r}
+#skills trials
+skills_data <- secondary_kidaoa_data %>% filter(word %in% c('stairs', 'car'))
+
+skills_overall_average <- skills_data %>% 
+  group_by(word) %>% 
+  tidyboot_mean(judgment)
+car <- skills_overall_average %>% filter(word == "car") %>% pull(empirical_stat)
+stairs <- skills_overall_average %>% filter(word == "stairs") %>% pull(empirical_stat)
+
+#model, overall
+skills_overall <- lmer(judgment ~ word + (1 | id), data = skills_data) %>% tidy() %>%
+  mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordstairs")
+
+#model, by age
+skills_4s <- lmer(judgment ~ word + (1 | id),
+       data = skills_data %>% filter(age == 4)) %>% tidy() %>%
+   mutate(p.value = printp(p.value, digits = 2)) %>%
+  filter(term == "wordstairs")
+```
+
 Overall, children were significantly more likely to report that Sam knows the word "ball" ($mean =$ `r ball`) than that Sam knows the word "artichoke" ($mean =$ `r artichoke`, $\beta =$ `r training_overall$estimate`, $t =$ `r training_overall$statistic`, $p =$ `r training_overall$p.value`). Analyzing judgments separately for each age group, 4-year-olds do not significantly differentiate the two familiarization items ($\beta =$ `r training_4s$estimate`, $t =$ `r training_4s$statistic`, $p =$ `r training_4s$p.value`). All other age groups signifcantly differentiated the two familiarization items ($ps <$ 0.05).
 
 
@@ -280,59 +332,6 @@ ggplot(age_terms, aes(x = age_numeric, y = estimate, color = type,
 
 To test the robustness of this intuition at each age, we ran the above model separately for each year-wise age group. While we see evidence of developmental change above, this additional analysis helps us understand if even young children are showing this intuition. We find a significant negative effect of AoA on children's judgments at all age groups (with the smallest effect in 4-year-olds: $\beta =$ `r fours_aoa$estimate`, $t =$ `r fours_aoa$statistic`, $p =$ `r fours_aoa$p.value`). That is, even 4-year-old children judged that late-acquired animal words were less likely to be known by the target child.
 
-
-```{r}
-#familiarization trials
-training_data <- secondary_kidaoa_data %>% filter(word %in% c('ball', 'artichoke'))
-training_age_average <- training_data %>% 
-  group_by(age, word) %>% 
-  tidyboot_mean(judgment)
-
-training_overall_average <- training_data %>% 
-  group_by(word) %>% 
-  tidyboot_mean(judgment)
-ball <- training_overall_average %>% filter(word == "ball") %>% pull(empirical_stat)
-artichoke <- training_overall_average %>% filter(word == "artichoke") %>% pull(empirical_stat)
-
-#model, overall
-training_overall <- lmer(judgment ~ word + (1 | id), data = training_data) %>% tidy() %>%
-  mutate(p.value = printp(p.value, digits = 2)) %>%
-  filter(term == "wordball")
-
-#model, by age
-training_4s <- lmer(judgment ~ word + (1 | id),
-       data = training_data %>% filter(age == 4)) %>% tidy() %>%
-   mutate(p.value = printp(p.value, digits = 2)) %>%
-  filter(term == "wordball")
-
-training_5s <- lmer(judgment ~ word + (1 | id),
-       data = training_data %>% filter(age == 5)) %>% tidy() %>%
-   mutate(p.value = printp(p.value, digits = 2)) %>%
-  filter(term == "wordball")
-```
-
-```{r}
-#skills trials
-skills_data <- secondary_kidaoa_data %>% filter(word %in% c('stairs', 'car'))
-
-skills_overall_average <- skills_data %>% 
-  group_by(word) %>% 
-  tidyboot_mean(judgment)
-car <- skills_overall_average %>% filter(word == "car") %>% pull(empirical_stat)
-stairs <- skills_overall_average %>% filter(word == "stairs") %>% pull(empirical_stat)
-
-#model, overall
-skills_overall <- lmer(judgment ~ word + (1 | id), data = skills_data) %>% tidy() %>%
-  mutate(p.value = printp(p.value, digits = 2)) %>%
-  filter(term == "wordstairs")
-
-#model, by age
-skills_4s <- lmer(judgment ~ word + (1 | id),
-       data = skills_data %>% filter(age == 4)) %>% tidy() %>%
-   mutate(p.value = printp(p.value, digits = 2)) %>%
-  filter(term == "wordstairs")
-```
-
 ```{r}
 # inferred age
 inferred_age <- secondary_kidaoa_data %>% filter(word %in% c('infAge')) %>% filter(!is.na(judgment))
@@ -416,7 +415,7 @@ print(exp_plot, fig.pos="tb",
       environment = "figure*")
 ```
 
-To understand how children's explanations may change over development, we looked at explanations by age group. *Language* explanations were used by the highest proportion of children overall (`r prop$language*100`%). Do older children account for all of those explanations? While almost half of the 7- and 8-year-olds appealed to *Language* explanations (`r each_age$language[4]*100`% and `r each_age$language[5]*100`%), we find that 5-year-olds (but not 6-year-olds) were also likely to use *Language* explanations (`r each_age$language[2]*100`%). Unsurprisingly, *Unsure* explanations were more common in younger children, accounting for over half (`r each_age$unsure[1]*100`%) of the 4-year-olds' explanations, and none of the 7- and 8-year-olds' responses. 
+To understand how children's explanations may change over development, we divided participants in older (6-8 years old) and younger children (4-5 years old). *Language* explanations were used by the highest proportion of children overall (`r prop$language*100`%). Do older children account for all of those explanations? While more of the older children appealed to *Language* explanations (`r split_age$language[1]*100`%), these explanations were also common in younger children (`r split_age$language[2]*100`%). Unsurprisingly, *Unsure* explanations were more common in younger children (`r split_age$unsure[2]*100`%) when compared to older children (`r split_age$unsure[1]*100`%). 
 
 # Discussion
 
@@ -424,11 +423,11 @@ Our ability to infer other people’s knowledge is crucial for successful commun
 
 Our findings indicate that young children have surprising metalinguistic knowledge, and can use that knowledge to make highly-specific inferences about other people's knowledge. The animal words used in our study are generally learned within a 6-month period, yet young children still distinguished early-acquired words from late-acquired words in this set. Our study also builds upon the extant literature on children’s inferences about other people’s knowledge to show that children infer others’ specific, lexical knowledge. When given fairly minimal information about another child, children readily make estimates about that child’s lexical knowledge.
 
-Surprisingly, responses from the oldest children in our sample more closely correlated with adult judgments of AoA [@kuperman2012] even when compared to adults participants in this study. Older children in our study were more likely to use the full 6-point scale. A potential explanation is that children may be more accurate at estimating other chilren's lexical knowledge. In line with this hypothesis, @walley1992 found that preschoolers were better at estimating the age at which they learned certain words than adults were. One reason for this may be that adults cannot rely on specific memories for when they learned words, and must use other information such as word frequency. However, this is unlikely to be the complete story, as this account would predict that younger children would perform better than older children when making inferences about another young child, which is the opposite of our findings. Additionally, children and adults' estimates for how old the target child was may be an important factor. In our sample, adults gave higher estimates for the target child's age when compared to children. This may, in part, explain why adults' inferences did not entirely match @kuperman2012 AoA data, and why they were less likely to say that the target child did not know a certain animal word.
+Surprisingly, responses from the oldest children in our sample more closely correlated with adult judgments of AoA [@kuperman2012] even when compared to adults participants in this study. Older children in our study were more likely to use the full 6-point scale. A potential explanation is that children may be more accurate at estimating other children's lexical knowledge because of their proximity to the age that they learned a word. However, this is unlikely to be the complete story, as this account would predict that younger children would perform better than older children when making inferences about another young child, which is the opposite of our findings. Additionally, children and adults' estimates for how old the target child was may be an important factor. In our sample, adults gave higher estimates for the target child's age when compared to children. This may, in part, explain why adults' inferences did not entirely match @kuperman2012 AoA data, and why they were less likely to say that the target child did not know a certain animal word.
 
 How are children in our study making estimates about other people’s knowledge? Children’s own explanations suggest that they use various cues to make their estimates. Overall, language-related explanations were used by the highest proportion of children, and even preschool age children appealed to this explanation. This result suggests that even young children rely on metalinguistic knowledge to make inferences about others. One limitation of the current study is that it leaves the mechanisms underlying such estimates unclear. Future work should more directly probe the features underlying this inference-- to see if children are relying on their own uncertainty, word length (and other linguistic cues), features of the referent itself, or still other features.
 
-The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. While some studies have found that young children struggle in a variety of communicative tasks [e.g. @krauss1977], other work has shown that by age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state [@baer2018]. Why might children struggle in some situations and not others? Our work can begin to address this by mapping out whether communicative difficulties stem from tracking an interlocutor’s knowledge, or problems using that information in language production.
+The current work lays the foundation for future research on how children leverage their knowledge of other people to communicate successfully. While some studies have found that young children struggle in a variety of communicative tasks [e.g. @krauss1977], other work has shown that by age 5, children selectively talk about general or specific characteristics of an object based on their partners’ knowledge state [@baer2018]. Why might children struggle in some situations and not others? Our work can begin to address this by mapping out whether communicative difficulties stem from tracking an interlocutor’s knowledge, or problems using that information in language production. Children eventually become effective communicators, and our work offers important insight into one aspect of children's developing communicative skills. By preschool, children are surprisingly adept at inferring others' specific knowledge, and further work can probe the extent to which young children can leverage this knowledge in communication.
 
 
 \vspace{1em} \fbox{\parbox[b][][c]{7.3cm}{\centering Stimuli, data, and analysis code available after deanonymization.}}
