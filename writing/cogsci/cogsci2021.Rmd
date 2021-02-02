@@ -138,6 +138,19 @@ print(overall, type = "figure", comment = F, fig.placement = "b", floating = TRU
 
 # Results
 
+#### Familiarization trials. 
+
+Children completed two familiarization trials asking about the target child's knowledge of two non-animal words (*ball* and *artichoke*). These questions were primarily included to help children get accustomed to the general trial structure. To analyze children's responses on these familiarization items, we used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. 
+
+Overall, children were significantly more likely to report that Sam knows the word "ball" ($mean =$ `r ball`) than that Sam knows the word "artichoke" ($mean =$ `r artichoke`, $\beta =$ `r training_overall$estimate`, $t =$ `r training_overall$statistic`, $p =$ `r training_overall$p.value`). Analyzing judgments separately for each age group, 4-year-olds do not significantly differentiate the two familiarization items ($\beta =$ `r training_4s$estimate`, $t =$ `r training_4s$statistic`, $p =$ `r training_4s$p.value`). All other age groups signifcantly differentiated the two familiarization items ($ps <$ 0.05).
+
+
+#### Skill knowledge. 
+
+We included two questions about the target child's skill knowledge. These questions were intended primarily as a check that children at all ages were able to use the scale appropriately and able to infer knowledge in a non-linguisitic domain. Note that the two skill items (*going up and down stairs*, and *driving a car*) are also in line with children's own knowledge, unlike the word items. That is, child participants should be able to answer these questions appropriately even if they are reasoning egocentrically about their own knowledge.
+
+Overall, children differentiated the target child's skill knowledge on these two items. We used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. Children were significantly more likely to report that the child knows how to go up and down stairs ($mean =$ `r stairs`) than that the child knows how to drive a car ($mean =$ `r car`, $\beta =$ `r skills_overall$estimate`, $t =$ `r skills_overall$statistic`, $p =$ `r skills_overall$p.value`). Analyzing judgments separately for each age group, even 4-year-olds were significantly differentiating the two skill item ($\beta =$ `r skills_4s$estimate`, $t =$ `r skills_4s$statistic`, $p =$ `r skills_4s$p.value`).
+
 Our primary analyses compare knowledge judgments on our 6-point scale to AoA judgments from adults [taken from @kuperman2012]. Data were analyzed using pre-registered mixed effects model predicting children's judgments from adult AoA estimates [@kuperman2012], including random effects for participant and word. Using the \texttt{lme4} package in \texttt{R} [@bates2015]. We our model syntax was `judgment ~ AoA + (1 | participant) + (1 | word)`.
 
 We expected that overall, children's judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the target child is most likely to know early acquired words, and least likely to know late acquired words. As a result, we expected a negative relationship between judgments of the target child's lexical knowledge and adult AoA estimates. 
@@ -324,22 +337,6 @@ skills_4s <- lmer(judgment ~ word + (1 | id),
 # inferred age
 inferred_age <- secondary_kidaoa_data %>% filter(word %in% c('infAge')) %>% filter(!is.na(judgment))
 ```
-
-
-## Secondary Results
-
-#### Familiarization trials. 
-
-Children completed two familiarization trials asking about the target child's knowledge of two non-animal words (*ball* and *artichoke*). These questions were primarily included to help children get accustomed to the general trial structure. To analyze children's responses on these familiarization items, we used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. 
-
-Overall, children were significantly more likely to report that Sam knows the word "ball" ($mean =$ `r ball`) than that Sam knows the word "artichoke" ($mean =$ `r artichoke`, $\beta =$ `r training_overall$estimate`, $t =$ `r training_overall$statistic`, $p =$ `r training_overall$p.value`). Analyzing judgments separately for each age group, 4-year-olds do not significantly differentiate the two familiarization items ($\beta =$ `r training_4s$estimate`, $t =$ `r training_4s$statistic`, $p =$ `r training_4s$p.value`). All other age groups signifcantly differentiated the two familiarization items ($ps <$ 0.05).
-
-
-#### Skill knowledge. 
-
-We included two questions about the target child's skill knowledge. In the event that children at any age were differentiating the target child's lexical knowledge, these questions were intended primarily as a check that children at all ages were nevertheless able to use the scale appropriately and able to infer knowledge in another domain. Note that the two skill items (*going up and down stairs*, and *driving a car*) are also in line with children's own knowledge, unlike the word items. That is, child participants should be able to answer these questions appropriately even if they are reasoning egocentrically about their own knowledge.
-
-Overall, children differentiated the target child's skill knowledge on these two items. We used a similar mixed effects structure predicting children's knowledge judgments from the item and a random effect of pariticpant. Children were significantly more likely to report that the child knows how to go up and down stairs ($mean =$ `r stairs`) than that the child knows how to drive a car ($mean =$ `r car`, $\beta =$ `r skills_overall$estimate`, $t =$ `r skills_overall$statistic`, $p =$ `r skills_overall$p.value`). Analyzing judgments separately for each age group, even 4-year-olds were significantly differentiating the two skill item ($\beta =$ `r skills_4s$estimate`, $t =$ `r skills_4s$statistic`, $p =$ `r skills_4s$p.value`).
 
 
 ### Explanations
