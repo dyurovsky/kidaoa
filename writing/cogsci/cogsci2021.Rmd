@@ -41,7 +41,7 @@ library(png)
 library(xtable)
 library(tidyboot)
 
-theme_set(theme_few(base_size = 14))
+theme_set(theme_few(base_size = 12))
 ```
 
 
@@ -56,9 +56,9 @@ In line with this conjecture, @kuperman2012 asked people to report the age at wh
 
 Can children use this same kind of information to predict whether others will know words? Evidence suggests that reasoning about another person's specific lexical knowledge could be difficult for young children. Children show consistent errors in reasoning about others' knowledge, commonly over-attributing knowledge [e.g., @gopnik1988; @taylor1994]. The bias to over-attribute knowledge is particularly pronounced for information that the child themselves knows, or is familiar with--both of which would be problems for reasoning about the knowledge of a younger child [@birch2003; @ghrear2020].  
 
-However, even preschool age children are able to make non-egocentric knowledge judgments in some tasks. Asked about variety of general knowledge skills, young children attribute different levels of knowledge to infants, preschool children, and adults [@fitneva2010; @taylor1991]. By at least age 6, children even judge adults as *less* likely than other children to know about some topics, such as toys or children's television [@fitneva2010; @vanderborght2009]. While these studies sometimes include vocabulary items among other kinds of knowledge items [e.g., @taylor1991], they rely on large scale distinctions, such as an infant not knowing any words, a child knowing simple words (e.g., *happy*), and an adult knowing complex words (e.g., *hypochondriac*). One study suggests that children as young as 5 can make metalinguistic judgments about their own vocabularies, but it is unclear whether they should be able to accurately judge the lexical knowledge of others [@walley1992]. 
+However, even preschool age children are able to make non-egocentric knowledge judgments in some tasks. Asked about variety of general knowledge skills, young children attribute different levels of knowledge to infants, preschool children, and adults [@fitneva2010; @taylor1991]. By at least age 6, children even judge adults as *less* likely than other children to know about some topics, such as toys or children's television [@fitneva2010; @vanderborght2009]. While these studies sometimes include vocabulary items among other kinds of knowledge items [e.g., @taylor1991], they rely on large scale distinctions, such as an infant not knowing any words, a child knowing simple words (e.g., *happy*), and an adult knowing complex words (e.g., *hypochondriac*). One study suggests that children as young as 5 can make metalinguistic judgments about their *own* vocabularies, but it is unclear whether they should be able to accurately judge the lexical knowledge of others [@walley1992]. 
 
-We ask how children infer another child's specific vocabulary knowledge, accurately predicting the words that a younger child will know based on words' normative age of acquisition. We introduced 4- to 8-year-old children to a younger fictional child, and asked them to make judgments about the target child's knowledge of various familiar words. The accuracy of children's judgments improved reliably from 4- to 8-years of age, but even 4-year-old children showed knowledge about the words that the target child was likely to know. Further, 7- and 8-year-old children were more sensitive to the difficulty of learning words than a comparison group of adult. We end by discussing children's own explanations for why the target child would know (or not know) particular words.
+We ask how children infer another child's specific vocabulary knowledge, accurately predicting the words that a younger child will know based on words' normative age of acquisition. We introduced 4- to 8-year-old children to a younger fictional child, and asked them to make judgments about the target child's knowledge of various familiar words. The accuracy of children's judgments improved reliably from 4- to 8-years of age, but even 4-year-old children showed knowledge about the words that the target child was likely to know. Further, 7- and 8-year-old children were more sensitive to the difficulty of learning words than a comparison group of adults. We end by discussing children's own explanations for why the target child would know (or not know) particular words.
 
 # Method
 
@@ -89,7 +89,7 @@ A separate sample of 30 adults were recruited via Amazon Mechanical Turk. The ad
 
 ## Procedure
 
-```{r task-method, fig.align='center', set.cap.width=T, num.cols.cap=1, fig.cap = "The structure of an example trial. The experimenter labeled the animal, then asks the child “Do you think Sam knows that this is called an elephant?” Based on their response, children were then asked to provide a confidence judgment on a 3-point scale (little sure, medium sure, very sure)."}
+```{r task-method, fig.align='center', set.cap.width=T, num.cols.cap=1, fig.cap = "The structure of an example trial. The experimenter labeled the animal, then asks the child “Do you think Sam knows that this is called an elephant?” Based on their response, children were then asked to provide a confidence judgment on a 3-point scale (a little sure, medium sure, very sure)."}
 img <- png::readPNG(("figs/task-method.png"))
 grid::grid.raster(img)
 ```
@@ -143,7 +143,7 @@ boot_by_age <- kidaoa_data %>%
   tidyboot_mean(judgment)
 
 labels <- boot_by_age %>%
-  filter(word %in% c("cat", "elephant", "raccoon"))
+  filter(word %in% c("cat", "penguin"))
 
 #use the raw data to make line and variability
    #points show averages by age
@@ -195,7 +195,7 @@ ggplot(age_terms, aes(x = age_numeric, y = estimate, color = type,
   theme(legend.position = "none") +
   geom_text(aes(label = plot_label), data = age_term_annotations) +
   scale_color_ptol() +
-  labs(x = "age (years)", y = "AoA's effect on judgments") +
+  labs(x = "Age (years)", y = "AoA's effect on judgments") +
   coord_cartesian(ylim = c(-1, 0)) +
   scale_x_continuous(breaks = 4:9, labels = c("4", "5", "6", "7", "8", "adult"),
                      limits = c(3.5,9.5))
@@ -266,7 +266,7 @@ Overall, children were significantly more likely to report that Sam knows the wo
 
 ## Skill knowledge
 
-We also included two questions about the target child's skill knowledge. These questions were intended primarily as a check that children at all ages were able to use the scale appropriately and able to infer knowledge in an easier case. Note that the two skill items (*going up and down stairs*, and *driving a car*) are in line with children's own knowledge, unlike the animal word items. That is, child participants should be able to answer these questions appropriately even if they are reasoning egocentrically about their own knowledge.
+We also included two questions about the target child's skill knowledge. These questions were intended primarily as a check that children at all ages were able to use the scale appropriately and able to infer knowledge in an easier case. Note that the two skill items (*going up and down stairs* and *driving a car*) are in line with children's own knowledge, unlike the animal word items. That is, child participants should be able to answer these questions appropriately even if they are reasoning egocentrically about their own knowledge.
 
 Overall, children differentiated the target child's skill knowledge on these two items. We used a similar mixed effects structure predicting children's knowledge judgments from the item and  a random effect of participant. Children were significantly more likely to report that the target child knows how to go up and down stairs ($mean =$ `r stairs`) than that the child knows how to drive a car ($mean =$ `r car`, $\beta =$ `r skills_overall$estimate`, $t =$ `r skills_overall$statistic`, $p =$ `r skills_overall$p.value`). Analyzing judgments separately for each age group, even 4-year-olds significantly differentiated the two skill items ($\beta =$ `r skills_4s$estimate`, $t =$ `r skills_4s$statistic`, $p =$ `r skills_4s$p.value`).
 
@@ -396,7 +396,7 @@ As an exploratory analysis, we examined the reasons young children gave for why 
 *Language* includes explanations that explicitly appealed to language properties. *Experience* includes explanations that appeal to the child's real-world experience with the referent. *Location* includes explanations that specifically reference a particular place the animal is associated with. *Age* includes explanations that reference a particular age or general age-group. Any child that failed to answer the explanation question or expressed ignorance was coded as giving an explanation of *Unsure*. An explanation that didn't fall into any of the above categories was coded as *Other*. Note that coding was not mutually-exclusive, so explanations could be coded as including multiple categories. See Table \ref{tab:explanations_table} for examples of each category. Figure \ref{fig:explanations} shows the proportion of children who gave each type of explanation. 
 
 
-```{r explanations, fig.cap = "Children's explanations for why they think the target child knew or didn't know an animal. Categories are not mutually exclusive."}
+```{r explanations, fig.width = 2.75, fig.height = 2.75, fig.align = "center", fig.cap = "Children's explanations for why they think the target child knew or didn't know an animal. Categories are not mutually exclusive."}
 prop %>%
   pivot_longer(c(age, experience, language, location, unsure, other), 
                names_to = "exp") %>%
@@ -441,7 +441,7 @@ Our ability to infer other people's knowledge is crucial for successful communic
 
 Our findings highlight that young children have robust metalinguistic knowledge [@walley1992], and can use that knowledge to make highly specific inferences about other people's knowledge. The animal words used in our study are generally learned within a 6-month period, yet young children still distinguished earlier-acquired words from later-acquired words in this set. Prior studies have demonstrated that children distinguish the general knowledge of infants, young children, and adults--including some vocabulary knowledge items [@fitneva2010; @taylor1991]. Our study further demonstrates that children readily make specific, word-level predictions about the language knowledge of another child.
 
-Surprisingly, responses from the oldest children in our sample more closely correlated with adult judgments of AoA [@kuperman2012] than did the judgments of adult participants in this study. This difference appears to be driven by older children being moree likely to judge that a young child would *not* know later-acquired words. It is possible that children may be more accurate at estimating other children's lexical knowledge because of their proximity to the age that they learned a word [see also @walley1992]. However, such an account should also predict that younger children would perform better than older children when making these inferences, which is counter to our developmental findings. Additionally, children and adults' estimates for the target child's age may be an important factor. In our sample, adults gave higher estimates for the target child's age than children did, and may have attributed more knowledge to the child more as a result.
+Surprisingly, responses from the oldest children in our sample more closely correlated with adult judgments of AoA [@kuperman2012] than did the judgments of adult participants in this study. This difference appears to be driven by older children being moreelikely to judge that a young child would *not* know later-acquired words. It is possible that children may be more accurate at estimating other children's lexical knowledge because of their proximity to the age that they learned a word [see also @walley1992]. However, such an account should also predict that younger children would perform better than older children when making these inferences, which is counter to our developmental findings. Additionally, children and adults' estimates for the target child's age may be an important factor. In our sample, adults gave higher estimates for the target child's age than children did, and may have attributed more knowledge to the child more as a result.
 
 How are children in our study making estimates about other people's knowledge? Children's own explanations suggest that they use various cues to make their estimates. Overall, language-related explanations were most common, and even preschool age children appealed to this explanation. However, such explanations are difficult to interpret, and the mechanisms underlying children's knowledge estimates are outside the scope of the current study. Future work should more directly probe the features underlying this inference-- to see if children are relying on their own uncertainty, word length (and other linguistic cues), features of the referent itself, or other features.
 
