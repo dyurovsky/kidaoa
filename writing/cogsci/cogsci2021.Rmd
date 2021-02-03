@@ -207,6 +207,9 @@ boot_by_age <- kidaoa_data %>%
   group_by(age, word, aoa) %>%
   tidyboot_mean(judgment)
 
+labels <- boot_by_age %>%
+  filter(word %in% c("cat", "elephant", "raccoon"))
+
 #use the raw data to make line and variability
    #points show averages by age
 development <- ggplot(kidaoa_data, aes(x = aoa, y = judgment, group = age,
@@ -219,6 +222,8 @@ development <- ggplot(kidaoa_data, aes(x = aoa, y = judgment, group = age,
   geom_point(data = boot_by_age, size = 1.5, color = "black", alpha = .75,
                   aes(y=empirical_stat)) +
   # a bit hard to see on this plot if we use labels, suggest we use regular points instead
+  geom_label(data = labels, size = 2.3, label.size = .1, label.padding = unit(.13, "lines"), color = "black",
+                  aes(y=empirical_stat)) +
   facet_grid(.~age) + 
   xlab("Adult AoA Estimates") +
   ylab("Knowledge Judgments") +
