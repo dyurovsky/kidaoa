@@ -106,13 +106,13 @@ The experimenter provided no evaluative feedback on any trials, but did offer co
 
 *Explanation.* After completing the final animal trial, children were asked an open-ended explanation question about their final judgment (e.g., "Why do you think Sam [knows/doesn't know] that this is called [an elephant]?"). Because the trial order was randomized, the explanations concerned different animal words across participants.
 
-*Final check questions.* Children were asked two questions about Sam's skill knowledge, one early acquired skill (*going up and down stairs*) and one very late acquired skill (*driving a car*). These questions again followed the general trial structure described above. The skill knowledge items were included as an additional check that children at all ages were able to use the scale appropriately, in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children's belief about Sam. Sam's photo and skill knowledge were intended to indicate toddlerhood.
+*Final check questions.* Children were asked two questions about Sam's skill knowledge, one early-acquired skill (*going up and down stairs*) and one very late-acquired skill (*driving a car*). These questions again followed the general trial structure described above. The skill knowledge items were included as an additional check that children at all ages were able to use the scale appropriately, in case young children failed to differentiate animal words based on AoA. Lastly, children were asked to report how old they thought Sam was. This question was intended to assess another aspect of children's belief about Sam. Sam's photo and skill knowledge were intended to indicate toddlerhood.
 
 #### Adult procedure.
 
 Adult participants completed a minimally adapted version of the same task online via Qualtrics. Unlike children, adults were simply presented with the full 6-point scale (1--*very sure Sam doesn't know* to 6--*very sure Sam does know*). Additionally, the task was administered asynchronously, so adult participants did not interact with an experimenter or receive any feedback during the task. Otherwise, the adult task was identical to the child task described above. 
 
-```{r overall, fig.width = 3.5, fig.cap = "Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows). The black lines show 95\\% confidence intervals for each item. The shaded region shows one standard error based on a linear regression estimated from the raw data."}
+```{r overall, fig.width = 3.5, fig.cap = "Comparing adult AoA estimates (in years, taken from Kuperman et al., 2012) and children’s judgments on our 6-point scale (1 = very sure Sam doesn’t know; 6 = very sure Sam knows). The black lines show 95\\% confidence intervals for each item. The shaded region shows the confidence interval based on a linear regression estimated from the raw data."}
 booted_kid_overall <- kidaoa_data %>% 
   # drop the adults, so it's only kids performance average
   filter(age != "Adults") %>%
@@ -201,7 +201,7 @@ We also included two questions about the target child's skill knowledge. These q
 
 Overall, children differentiated the target child's skill knowledge on these two items. We used a similar mixed effects structure predicting children's knowledge judgments from the item and  a random effect of participant. Children were significantly more likely to report that the target child knows how to go up and down stairs ($mean =$ `r stairs`) than that the child knows how to drive a car ($mean =$ `r car`, $\beta =$ `r skills_overall$estimate`, $t =$ `r skills_overall$statistic`, $p =$ `r skills_overall$p.value`). Analyzing judgments separately for each age group, even 4-year-olds significantly differentiated the two skill items ($\beta =$ `r skills_4s$estimate`, $t =$ `r skills_4s$statistic`, $p =$ `r skills_4s$p.value`).
 
-```{r development, fig.env = "figure*", fig.width = 7, fig.height = 3, fig.cap = "Children and adults judgements about the target child's word knowledge across development, compared with adult AoA estimates (in years, taken from Kuperman et al., 2012). Each point represents 1 of the 15 word items, with black lines showing 95\\% percent confidence intervals for each item. The shaded region shows one standard error based on a linear regression estimated from the raw data."}
+```{r development, fig.env = "figure*", fig.width = 7, fig.height = 3, fig.cap = "Children and adults judgements about the target child's word knowledge across development, compared with adult AoA estimates (in years, taken from Kuperman et al., 2012). Each point represents 1 of the 15 word items, with black lines showing 95\\% percent confidence intervals for each item. The shaded region shows the confidence interval based on a linear regression estimated from the raw data."}
 boot_by_age <- kidaoa_data %>% 
   # mutate(word = substr(word, 0, 3)) %>%
   group_by(age, word, aoa) %>%
@@ -238,7 +238,7 @@ print(development, fig.align = "center", fig.pos="t",
 
 Our primary analyses compare knowledge judgments on our 6-point scale to AoA judgments from adults [taken from @kuperman2012]. Data were analyzed using a pre-registered mixed effects model. We predicted children's judgments from adult AoA estimates, including random effects for participant and word.
 
-We expected that overall, children's judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the target child is most likely to know early acquired words, and least likely to know late acquired words. As a result, we expected a negative relationship between judgments of the target child's lexical knowledge and adult AoA estimates. 
+We expected that overall, children's judgments would recover the ordinal shape of age of acquisition data for these items. That is, children would infer that the target child is most likely to know early-acquired words, and least likely to know late-acquired words. As a result, we expected a negative relationship between judgments of the target child's lexical knowledge and adult AoA estimates. 
 
 
 ```{r model}
@@ -290,7 +290,7 @@ dev_age <- dev_model %>% filter(term == "age")
 dev_interaction <- dev_model %>% filter(term == "aoa:age")
 ```
 
-Do children's judgments about another child's vocabulary knowledge also reflect a sensitivity to which words are learned earlier or later? Overall, we found a significant negative effect of AoA on children's judgments ($\beta =$ `r overall_aoa$estimate`, $t =$ `r overall_aoa$statistic`, $p$ `r overall_aoa$p.value`). As a group, children judged that the target child would be most likely to know an early acquired word (e.g., dog) and least likely to know a late acquired word (e.g., lobster, see Figure \ref{fig:overall}).
+Do children's judgments about another child's vocabulary knowledge also reflect a sensitivity to which words are learned earlier or later? Overall, we found a significant negative effect of AoA on children's judgments ($\beta =$ `r overall_aoa$estimate`, $t =$ `r overall_aoa$statistic`, $p$ `r overall_aoa$p.value`). As a group, children judged that the target child would be most likely to know an early-acquired word (e.g., dog) and least likely to know a late-acquired word (e.g., lobster, see Figure \ref{fig:overall}).
 
 We then asked whether children develop sensitivity to Sam's vocabulary knowledge, with older children's judgments recovering word-level AoA data more closely. We used the same mixed effects model but included an effect of age and an interaction between AoA and age. We again found a reliable main effect of AoA ($\beta =$ `r dev_aoa$estimate`, $t =$ `r dev_aoa$statistic`, $p$ `r dev_aoa$p.value`), a main effect of age ($\beta =$ `r dev_age$estimate`, $t =$ `r dev_age$statistic`, $p$ `r dev_age$p.value`) and a significant interaction between the two ($\beta =$ `r dev_interaction$estimate`, $t =$ `r dev_interaction$statistic`, $p$ `r dev_interaction$p.value`). Thus, as predicted, we observed that older children judged whether Sam would know each animal in a more adult-like, and more accurate, way (Figure \ref{fig:development}).
 
