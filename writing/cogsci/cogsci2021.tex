@@ -54,6 +54,20 @@
 
 \title{Children know what words other children know}
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 
 
 
@@ -128,7 +142,7 @@ skills, young children attribute different levels of knowledge to
 infants, preschool children, and adults (Fitneva, 2010; Taylor,
 Cartwright, \& Bowden, 1991). While these studies sometimes include
 vocabulary items (e.g., Taylor et al., 1991), they test whether children
-make broad distinctions of different people's knowledge, such as an
+make broad distinctions between different people's knowledge, such as an
 infant not knowing any words, a child knowing simple words (e.g.,
 \emph{happy}), and an adult knowing complex words (e.g.,
 \emph{hypochondriac}).
@@ -208,7 +222,7 @@ described below.
 
 }
 
-\caption[The structure of an example trial]{The structure of an example trial. The experimenter labeled the animal, then asks the child “Do you think Sam knows that this is called an elephant?” Based on their response, children were then asked to provide a confidence judgment on a 3-point scale (a little sure, medium sure, very sure).}\label{fig:task-method}
+\caption[The structure of an example trial]{The structure of an example trial. The experimenter labeled the animal, then asked the child “Do you think Sam knows that this is called an elephant?” Based on their response, children were then asked to provide a confidence judgment on a 3-point scale (a little sure, medium sure, very sure).}\label{fig:task-method}
 \end{figure}
 \end{CodeChunk}
 
@@ -217,7 +231,7 @@ described below.
 to Sam's knowledge of various familiar skills, specifically some skills
 that Sam has acquired (e.g., coloring), and some that Sam has not yet
 acquired (e.g., reading). Children were then specifically anchored to
-Sam's possible word knowledge in an unrelated domain. They were given an
+Sam's possible word knowledge in a non-animal domain. They were given an
 example of one word Sam knows (\emph{car}), and one word that Sam does
 not know (\emph{piano}). This introduction was intended to ensure that
 children understand there are things Sam does \emph{not} know yet (even
@@ -302,7 +316,7 @@ adult task was identical to the child task described above.
 
 \begin{CodeChunk}
 \begin{figure}[tb]
-\includegraphics{figs/age_terms-1} \caption[Coefficient estimates of the effect of age acquisition on children's and adults' knowledge judgments]{Coefficient estimates of the effect of age acquisition on children's and adults' knowledge judgments. Points indicate means, error bars indicate 1 SD.}\label{fig:age_terms}
+\includegraphics{figs/age_terms-1} \caption[Coefficient estimates of the effect of age of acquisition on children's and adults' knowledge judgments]{Coefficient estimates of the effect of age of acquisition on children's and adults' knowledge judgments. Points indicate means, error bars indicate 1 standard deviation.}\label{fig:age_terms}
 \end{figure}
 \end{CodeChunk}
 
@@ -322,7 +336,7 @@ knowledge judgments from the item with a random effect of participant.
 Overall, children were significantly more likely to report that Sam
 knows the word \emph{ball} (\(mean =\) 4.65) than that Sam knows the
 word \emph{artichoke} (\(mean =\) 1.87, \(\beta =\) 2.77, \(t =\) 10.6,
-\(p =\) \textless{} .01). Analyzing judgments separately for each age
+\(p\) \textless{} .01). Analyzing judgments separately for each age
 group, 4-year-olds did not significantly differentiate the two
 familiarization items (\(\beta =\) 0.17, \(t =\) 0.21, \(p =\) .83). All
 other age groups significantly differentiated the two familiarization
@@ -341,23 +355,23 @@ egocentrically about their own knowledge.
 
 Overall, children differentiated the target child's skill knowledge on
 these two items. We used a similar mixed effects structure predicting
-children's knowledge judgments from the item and a random effect of
+children's knowledge judgments from the item with a random effect of
 participant. Children were significantly more likely to report that the
 target child knows how to go up and down stairs (\(mean =\) 4.1) than
 that the child knows how to drive a car (\(mean =\) 1.4, \(\beta =\)
-2.69, \(t =\) 10.29, \(p =\) \textless{} .01). Analyzing judgments
+2.69, \(t =\) 10.29, \(p\) \textless{} .01). Analyzing judgments
 separately for each age group, even 4-year-olds significantly
 differentiated the two skill items (\(\beta =\) 2.33, \(t =\) 4.31,
-\(p =\) \textless{} .01).
+\(p\) \textless{} .01).
 
 \hypertarget{judgments-of-vocabulary-knowledge}{%
 \subsection{Judgments of vocabulary
 knowledge}\label{judgments-of-vocabulary-knowledge}}
 
 Our primary analyses compare knowledge judgments on our 6-point scale to
-AoA judgments from adults (taken from Kuperman et al., 2012). Data were
+AoA estimates from adults (taken from Kuperman et al., 2012). Data were
 analyzed using a pre-registered mixed effects model. We predicted
-children's judgments from adult AoA estimates, including random effects
+knowledge judgments from adult AoA estimates, including random effects
 for participant and word.
 
 We expected that overall, children's judgments would recover the ordinal
@@ -377,11 +391,12 @@ tasks (Kuperman et al., 2012).
 
 Do children's judgments about another child's vocabulary knowledge also
 reflect a sensitivity to which words are learned earlier or later?
-Overall, we found a significant negative effect of AoA on children's
-judgments (\(\beta =\) -0.65, \(t =\) -8.29, \(p\) \textless{} .001). As
-a group, children judged that the target child would be most likely to
-know an early-acquired word (e.g., dog) and least likely to know a
-late-acquired word (e.g., lobster, see Figure \ref{fig:overall}).
+Overall, we found a significant negative correlation between AoA and
+children's judgments (\(\beta =\) -0.65, \(t =\) -8.29, \(p\)
+\textless{} .001). As a group, children judged that the target child
+would be most likely to know an early-acquired word (e.g., \emph{dog})
+and least likely to know a late-acquired word (e.g., \emph{lobster}, see
+Figure \ref{fig:overall}).
 
 We then asked whether children develop sensitivity to Sam's vocabulary
 knowledge, with older children's judgments recovering word-level AoA
@@ -402,7 +417,7 @@ between AoA and children's judgments at all age groups (with the
 smallest effect in 4-year-olds: \(\beta =\) -0.33, \(t =\) -3.01,
 \(p =\) .01). That is, even 4-year-old children judged that
 late-acquired animal words were less likely to be known by the target
-child. Interestingly, the older two age-groups of children were more
+child. Interestingly, the older two age groups of children were more
 accurate than adults in judging Sam's knowledge (Figure
 \ref{fig:age_terms}). This appeared to be primarily driven by a greater
 willingness to judge Sam as moderately or very unlikely to know
@@ -410,34 +425,33 @@ late-learned animal words, whereas adults were less sure about these
 same judgments (Figure \ref{fig:development}). We return to this finding
 in the Discussion.
 
-\hypertarget{how-old-is-the-target-child}{%
-\subsection{How old is the target
-child?}\label{how-old-is-the-target-child}}
+\hypertarget{target-child-age}{%
+\subsection{Target child age}\label{target-child-age}}
 
 At the end of the study, participants were asked to guess the target
 child's age. While the familiarization phase included information about
 the child's language and skill knowledge, no age was explicitly given.
 Looking at children's responses, the median response was that the target
-child was 3-years-old. Looking at adult's responses, the median response
-was that the target child was 4-years-old.
+child was 3 years old. Looking at adult's responses, the median response
+was that the target child was 4 years old.
 
 \hypertarget{explanations}{%
 \subsection{Explanations}\label{explanations}}
 
-As an exploratory analysis, we examined the reasons young children gave
-for why the target child would or would not know a given word. While
+As an exploratory analysis, we examined the reasons children gave for
+why the target child would or would not know a given word. While
 children sometimes offered spontaneous explanations throughout the
-study, this analysis focuses on the explanation elicited after the final
+study, our analysis focused on the explanations elicited after the final
 animal trial. The explanations were divided into 6 categories:
 \emph{Language}, \emph{Experience}, \emph{Location}, \emph{Age},
 \emph{Unsure}, and \emph{Other}.
 
 \emph{Language} includes explanations that explicitly appealed to
-language properties. \emph{Experience} includes explanations that appeal
-to the child's real-world experience with the referent. \emph{Location}
-includes explanations that specifically reference a particular place the
-animal is associated with. \emph{Age} includes explanations that
-reference a particular age or general age-group. Any child that failed
+language properties. \emph{Experience} includes explanations that
+appealed to real-world experience with the referent. \emph{Location}
+includes explanations that specifically referenced a particular place
+the animal is associated with. \emph{Age} includes explanations that
+referenced a particular age or general age group. Any child that failed
 to answer the explanation question or expressed ignorance was coded as
 giving an explanation of \emph{Unsure}. An explanation that didn't fall
 into any of the above categories was coded as \emph{Other}. Note that
@@ -453,7 +467,7 @@ proportion of children who gave each type of explanation.
 
 }
 
-\caption[Children's explanations for why they think the target child knew or didn't know an animal]{Children's explanations for why they think the target child knew or didn't know an animal. Categories are not mutually exclusive.}\label{fig:explanations}
+\caption[Children's explanations for why they think the target child knew or didn't know an animal word]{Children's explanations for why they think the target child knew or didn't know an animal word. Categories are not mutually exclusive.}\label{fig:explanations}
 \end{figure}
 \end{CodeChunk}
 
@@ -499,13 +513,13 @@ Language & Because it was a very long word. \\
 Our ability to infer other people's knowledge is crucial for successful
 communication. Young children are capable of inferring others' general
 knowledge, but do they make accurate judgments about another person's
-specific knowledge? We asked 4- to 8-year-old children to estimate
-another child's knowledge of words, and found that children as young as
-4 are sensitive to a younger child's vocabulary knowledge.
+\emph{specific} knowledge? We asked 4- to 8-year-old children to
+estimate another child's knowledge of words, and found that children as
+young as 4 are sensitive to a younger child's vocabulary knowledge.
 
 Our findings highlight that young children have robust metalinguistic
 knowledge (Walley \& Metsala, 1992), and can use that knowledge to make
-highly specific inferences about other people's knowledge. The animal
+highly specific inferences about other people's vocabularies. The animal
 words used in our study are generally learned within a 6-month period,
 yet young children still distinguished earlier-acquired words from
 later-acquired words in this set. Prior studies have shown that children
@@ -550,7 +564,7 @@ and not others? Our work can begin to address this question by mapping
 out whether communicative difficulties stem from tracking an
 interlocutor's knowledge, or problems using that information in language
 production. Young children eventually become effective communicators,
-and our work demonstrates that by age 4 children may have one key
+and our work demonstrates that by age 4, children may have one key
 ability in place: inferring others' specific vocabulary knowledge.
 
 \vspace{1em} \fbox{\parbox[b][][c]{7.3cm}{\centering Stimuli, data, and analysis code available after deanonymization.}}
