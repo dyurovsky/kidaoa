@@ -115,13 +115,12 @@ children have access to the kind of metalinguistic information they
 could use to calibrate speech to children's knowledge.
 
 Can children use this same kind of information to predict what words
-others might know? Evidence suggests that reasoning about another
-person's specific lexical knowledge could be difficult for young
-children, due to a tendency to over-attribute knowledge to others,
-especially knowledge they themselves already have (Birch \& Bloom, 2003;
-Ghrear, Fung, Haddock, \& Birch, 2020). Children's bias to
-over-attribute knowledge could hinder their ability to reason about a
-younger child's knowledge.
+others know? Reasoning about another person's specific lexical knowledge
+could be difficult for young children. Children often over-attribute
+knowledge to others, especially knowledge they themselves already have
+(Birch \& Bloom, 2003; Ghrear, Fung, Haddock, \& Birch, 2020). This bias
+to over-attribute knowledge could hinder children's ability to reason
+about a younger child's knowledge.
 
 However, even preschool age children can make non-egocentric knowledge
 judgments in some tasks. Asked about variety of general knowledge
@@ -135,10 +134,10 @@ infant not knowing any words, a child knowing simple words (e.g.,
 \emph{hypochondriac}).
 
 We ask whether children can infer another child's specific vocabulary
-knowledge, and make word-level predictions consistent with normative age
+knowledge to make word-level predictions consistent with normative age
 of acquisition. One study suggests that children as young as 5 can
 accurately estimate the age and order in which they learned a variety of
-words (Walley \& Metsala, 1992), but can they reason about other
+words (Walley \& Metsala, 1992), but can they reason about \emph{other}
 children's vocabulary knowledge? We introduced 4- to 8-year-old children
 to a younger fictional child, and asked them to make judgments about the
 target child's knowledge of various familiar words. The accuracy of
@@ -181,17 +180,16 @@ old, we expected all participants to know these animal words.
 \subsection{Participants}\label{participants}}
 
 We pre-registered a planned sample of 60 children ages 4-8, with 12
-children for each year-wise age group. Due to overrecruitment, our final
+children per year-wise age group. Due to overrecruitment, our final
 sample included 62 children (12 4-year-olds, 13 5-year-olds, 13
-6-year-olds, 12 7-year-olds, 12 8-year-olds). All analyses hold when
-looking only at the 60 children run first chronologically. Based on a
-pre-registered exclusion criterion, children who failed to answer all of
-the questions were excluded and replaced (an additional 6 children).
-Families were recruited online, primarily through a US University
-database of families who have expressed interest in doing research or
-previously participated. Children completed this study over Zoom,
-interacting with a live experimenter who navigated a slide-style,
-animated Qualtrics survey.
+6-year-olds, 12 7-year-olds, 12 8-year-olds). Based on a pre-registered
+exclusion criterion, children who failed to answer all of the questions
+were excluded and replaced (an additional 6 children). Families were
+recruited online, primarily through a US University database of families
+who have expressed interest in doing research or previously
+participated. Children completed this study over Zoom, interacting with
+a live experimenter who navigated a slide-style, animated Qualtrics
+survey.
 
 A separate sample of 30 adults were recruited via Amazon Mechanical
 Turk. The adult sample provides a simple test that our task elicits
@@ -221,11 +219,9 @@ that Sam has acquired (e.g., coloring), and some that Sam has not yet
 acquired (e.g., reading). Children were then specifically anchored to
 Sam's possible word knowledge in an unrelated domain. They were given an
 example of one word Sam knows (\emph{car}), and one word that Sam does
-not know (\emph{piano}). This introduction was intended to familiarize
-the children with Sam, roughly anchor them to Sam's knowledge and age,
-and to ensure that children understand there are things Sam does
-\emph{not} know yet (even things children themselves likely know, such
-as how to read).
+not know (\emph{piano}). This introduction was intended to ensure that
+children understand there are things Sam does \emph{not} know yet (even
+things children themselves likely know, such as how to read).
 
 \emph{Trial structure.} On each trial, children were shown a drawing of
 a familiar object or animal (Rossion \& Pourtois, 2004). The
@@ -237,11 +233,9 @@ follow-up question: ``How sure are you that Sam {[}knows/doesn't know{]}
 that this is called {[}an elephant{]}--a little sure, medium sure, or
 very sure?'' All questions were presented with accompanying pictures of
 thumbs {[}up/down{]} of varying size (see Figure \ref{fig:task-method}).
-Children as young as 3 are able to engage in uncertainty monitoring and
-report their confidence, although these skills do develop in the
-preschool years (Lyons \& Ghetti, 2011). Children's responses to these
-two items were recoded onto a 1-6 scale from 1--\emph{very sure Sam
-doesn't know} to 6--\emph{very sure Sam knows}.
+Children's responses to these two items were recoded onto a 1-6 scale
+from 1--\emph{very sure Sam doesn't know} to 6--\emph{very sure Sam
+knows}.
 
 The experimenter provided no evaluative feedback on any trials, but did
 offer consistent neutral feedback (e.g., repeating the child's answer or
@@ -318,14 +312,12 @@ adult task was identical to the child task described above.
 \hypertarget{familiarization-trials}{%
 \subsection{Familiarization trials}\label{familiarization-trials}}
 
-Children completed two familiarization trials asking about the target
-child's knowledge of two non-animal words (\emph{ball} and
-\emph{artichoke}). These questions were primarily included to help
-children get accustomed to the general trial structure. To analyze
-children's responses on these familiarization items, we used a mixed
-effects model using the \texttt{lme4} package in \texttt{R} (Bates,
-Mächler, Bolker, \& Walker, 2015), predicting children's knowledge
-judgments from the item with a random effect of participant.
+Two familiarization items (\emph{ball} and \emph{artichoke}) were
+included to help children get accustomed to the general trial structure.
+To analyze children's responses on these familiarization items, we used
+a mixed effects model using the \texttt{lme4} package in \texttt{R}
+(Bates, Mächler, Bolker, \& Walker, 2015), predicting children's
+knowledge judgments from the item with a random effect of participant.
 
 Overall, children were significantly more likely to report that Sam
 knows the word \emph{ball} (\(mean =\) 4.65) than that Sam knows the
@@ -339,14 +331,13 @@ items (\(ps <\) 0.05).
 \hypertarget{skill-knowledge}{%
 \subsection{Skill knowledge}\label{skill-knowledge}}
 
-We also included two questions about the target child's skill knowledge.
-These questions were intended primarily as a check that children at all
-ages were able to use the scale appropriately and able to infer
-knowledge in an easier case. Note that the two skill items (\emph{going
-up and down stairs} and \emph{driving a car}) are in line with
-children's own knowledge, unlike the animal word items. That is, child
-participants should be able to answer these questions appropriately even
-if they are reasoning egocentrically about their own knowledge.
+As an initial check that children at all ages were able to use the scale
+appropriately and infer knowledge in an easier case, we included two
+questions about the target child's skill knowledge. Note that the two
+skill items (\emph{going up and down stairs} and \emph{driving a car})
+are in line with children's own knowledge. That is, children should be
+able to answer these questions appropriately even if they are reasoning
+egocentrically about their own knowledge.
 
 Overall, children differentiated the target child's skill knowledge on
 these two items. We used a similar mixed effects structure predicting
@@ -437,9 +428,9 @@ As an exploratory analysis, we examined the reasons young children gave
 for why the target child would or would not know a given word. While
 children sometimes offered spontaneous explanations throughout the
 study, this analysis focuses on the explanation elicited after the final
-animal trial. The explanations were divided into 6
-non-mutually-exclusive categories: \emph{Language}, \emph{Experience},
-\emph{Location}, \emph{Age}, \emph{Unsure}, and \emph{Other}.
+animal trial. The explanations were divided into 6 categories:
+\emph{Language}, \emph{Experience}, \emph{Location}, \emph{Age},
+\emph{Unsure}, and \emph{Other}.
 
 \emph{Language} includes explanations that explicitly appealed to
 language properties. \emph{Experience} includes explanations that appeal
@@ -507,11 +498,10 @@ Language & Because it was a very long word. \\
 
 Our ability to infer other people's knowledge is crucial for successful
 communication. Young children are capable of inferring others' general
-knowledge states, but do they make accurate judgments about another
-person's specific knowledge? We asked 4- to 8-year-old children to
-estimate another child's knowledge of animal words, and found that
-children as young as 4 are sensitive to a younger child's vocabulary
-knowledge.
+knowledge, but do they make accurate judgments about another person's
+specific knowledge? We asked 4- to 8-year-old children to estimate
+another child's knowledge of words, and found that children as young as
+4 are sensitive to a younger child's vocabulary knowledge.
 
 Our findings highlight that young children have robust metalinguistic
 knowledge (Walley \& Metsala, 1992), and can use that knowledge to make
@@ -534,10 +524,9 @@ children's lexical knowledge because of their proximity to the age that
 they learned a word (see also Walley \& Metsala, 1992). However, such an
 account should also predict that younger children would perform better
 than older children when making these inferences, which is counter to
-our developmental findings. Additionally, children and adults' estimates
-for the target child's age may be an important factor. In our sample,
-adults gave higher estimates for the target child's age than children
-did, and may have attributed more knowledge to the child as a result.
+our developmental findings. Additionally, adults gave higher estimates
+for the target child's age than children did, and may have attributed
+more knowledge to the child as a result.
 
 How are children in our study making estimates about other people's
 knowledge? Children's own explanations suggest that they use various
@@ -629,11 +618,6 @@ Research Methods}, \emph{44}(4), 978--990.
 Leung, A., Tunkel, A., \& Yurovsky, D. (in press). Parents fine-tune
 their speech to children's vocabulary knowledge. \emph{Psychological
 Science}.
-
-\leavevmode\hypertarget{ref-lyons2011}{}%
-Lyons, K. E., \& Ghetti, S. (2011). The development of uncertainty
-monitoring in early childhood. \emph{Child Development}, \emph{82}(6),
-1778--1787.
 
 \leavevmode\hypertarget{ref-rossion2004}{}%
 Rossion, B., \& Pourtois, G. (2004). Revisiting Snodgrass and
