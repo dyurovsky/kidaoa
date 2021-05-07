@@ -4,7 +4,16 @@ bibliography: kidaoa.bib
 csl: apa6.csl
 document-params: "10pt, letterpaper"
 
-author-information: > 
+author-information: >
+    \author{Ashley Leung \\
+         \texttt{ashleyleung@uchicago.edu} \\
+        Department of Psychology \\ University of Chicago
+    \And Benjamin C. Morris \\
+         \texttt{benmorris@uchicago.edu} \\
+        Department of Psychology \\ University of Chicago
+    \And Daniel Yurovsky \\
+         \texttt{yurovsky@cmu.edu} \\
+        Department of Psychology \\ Carnegie Mellon University}
 
 abstract: > 
     To communicate successfully, we need to use words that our conversational partner understands. Adults maintain precise models of the words people are likely to know, using both prior experience with their conversational partner and general metalinguistic information. Do children also know what words others are likely to know? We asked children ages 4-8 ($n =$ 62) to predict whether a very young child would know each of 15 familiar animal words, all typically acquired within a 6-month range. With minimal information, even children as young as 4 made reliable predictions about the target child's vocabulary knowledge. Further, children's accuracies improved significantly over the course of development. Thus, even preschool age children are adept at inferring other children's vocabulary knowledge, and they could leverage this information to communicate effectively.
@@ -13,7 +22,7 @@ keywords: >
     communication, metalinguistic, knowledge reasoning, cognitive development
     
 output: cogsci2016::cogsci_paper
-# final-submission:  \cogscifinalcopy
+final-submission:  \cogscifinalcopy
 ---
 
 ```{r global_options, include=FALSE}
@@ -58,9 +67,7 @@ Can children use this same kind of information to predict what words others know
 
 However, even preschool age children can make non-egocentric knowledge judgments in some tasks. Asked about variety of general knowledge skills, young children attribute different levels of knowledge to infants, preschool children, and adults [@fitneva2010; @taylor1991]. While these studies sometimes include vocabulary items [e.g., @taylor1991], they test whether children make broad distinctions between different people's knowledge, such as an infant not knowing any words, a child knowing simple words (e.g., *happy*), and an adult knowing complex words (e.g., *hypochondriac*). 
 
-We ask whether children can infer another child's specific vocabulary knowledge to make word-level predictions consistent with normative age of acquisition. One study suggests that children as young as 5 can accurately estimate the age and order in which they learned a variety of words [@walley1992], but can they reason about *other* children's vocabulary knowledge? We introduced 4- to 8-year-old children to a younger fictional child, and asked them to make judgments about the target child's knowledge of various familiar words. The accuracy of children's judgments improved reliably from 4- to 8-years of age, but even 4-year-old children showed knowledge about the words that the target child was likely to know. We end by discussing children's own explanations for why the target child would know (or not know) particular words.
-
-<!-- Further, 7- and 8-year-old children were more sensitive to the difficulty of learning words than a comparison group of adults. -->
+We ask whether children can infer another child's specific vocabulary knowledge to make word-level predictions consistent with normative age of acquisition. One study suggests that children as young as 5 can accurately estimate the age and order in which they learned a variety of words [@walley1992], but can they reason about *other* children's vocabulary knowledge? We introduced 4- to 8-year-old children to a younger fictional child, and asked them to make judgments about the target child's knowledge of various familiar words. Even 4-year-old children made judgments that matched the estimated order of acquisition, such that they judged the fictional child to be more likely to know earlier-acquired words and less likely to know later-acquired words. Older children's judgments more reliably recovered the order of acquisition. We end by discussing children's own explanations for why the target child would know (or not know) particular words.
 
 # Method
 
@@ -78,7 +85,7 @@ explanations <- read_csv(here("kid_data/explanations_coded_AL.csv"))
 
 ## Stimuli
 
-Our stimuli consisted of 15 words drawn from a single domain (animal words), along with corresponding images of each animal. We pulled all animal images ($n =$ 45) from a normed image set [@rossion2004; recoloring of @snodgrass1980]. To ensure our stimuli spanned a range of ages of acquisition (AoAs), we ranked the animal words from earliest to latest AoA, using adult estimates from @kuperman2012, and split the words into five bins. In order to select animal images that are recognizable and typically identified by a single name, we chose the three animals from each AoA bin with the highest naming agreement according to a naming task with children [@cycowicz1997]. 
+To create a coherent game that would be enjoyable for children, we selected stimuli from a single domain (animals). Our stimuli consisted of 15 animal words, along with corresponding images of each animal. We pulled all animal images ($n =$ 45) from a normed image set [@rossion2004; recoloring of @snodgrass1980]. To ensure our stimuli spanned a range of ages of acquisition (AoAs), we ranked the animal words from earliest to latest AoA, using adult estimates from @kuperman2012, and split the words into five bins. In order to select animal images that are recognizable and typically identified by a single name, we chose the three animals from each AoA bin with the highest naming agreement according to a naming task with children [@cycowicz1997]. 
 
 The resulting animal words, ordered by estimated AoA, were *dog*, *duck*, *cat*, *pig*, *fish*, *turtle*, *zebra*, *elephant*, *snake*, *penguin*, *gorilla*, *owl*, *raccoon*, *leopard*, and *lobster.* Although adult AoA estimates for these words range from 2.5 to 7.5 years old [@kuperman2012], all of these animal words are generally acquired by age 3 according to parent-report estimates of children's vocabulary knowledge [@frank2017]. Because the youngest children in our study were 4 years old, we expected all participants to know these animal words.
 
@@ -98,7 +105,7 @@ grid::grid.raster(img)
 
 *Introduction.* Children were shown a picture of a child named "Sam" (seen in Figure \ref{fig:task-method}). Children were anchored to Sam's knowledge of various familiar skills, specifically some skills that Sam has acquired (e.g., coloring), and some that Sam has not yet acquired (e.g., reading). Children were then specifically anchored to Sam’s possible word knowledge in a non-animal domain. They were given an example of one word Sam knows (*car*), and one word that Sam does not know (*piano*). This introduction was intended to ensure that children understand there are things Sam does *not* know yet (even things children themselves likely know, such as how to read).
 
-*Trial structure.* On each trial, children were shown a drawing of a familiar object or animal [@rossion2004]. The experimenter first labeled the object (e.g., “Look, it's [an elephant]!"), and then asked about the target child's knowledge (e.g., "Do you think Sam knows that this is called [an elephant]? Yes or no?”). Based on their response, children were then asked a follow-up question: "How sure are you that Sam [knows/doesn't know] that this is called [an elephant]--a little sure, medium sure, or very sure?" All questions were presented with accompanying pictures of thumbs [up/down] of varying size (see Figure \ref{fig:task-method}). <!--Children as young as 3 are able to engage in uncertainty monitoring and report their confidence, although these skills do develop in the preschool years [@lyons2011].--> Children's responses to these two items were recoded onto a 1-6 scale from 1--*very sure Sam doesn't know* to 6--*very sure Sam knows*. 
+*Trial structure.* On each trial, children were shown a drawing of a familiar object or animal [@rossion2004]. The experimenter first labeled the object (e.g., “Look, it's [an elephant]!"), and then asked about the target child's knowledge (e.g., "Do you think Sam knows that this is called [an elephant]? Yes or no?”). Based on their response, children were then asked a follow-up question: "How sure are you that Sam [knows/doesn't know] that this is called [an elephant]--a little sure, medium sure, or very sure?" All questions were presented with accompanying pictures of thumbs [up/down] of varying size (see Figure \ref{fig:task-method}). This trial structure allowed us to collect a gradient response while maintaining simplicity, as young children may struggle to comprehend a 6-point scale. <!--Children as young as 3 are able to engage in uncertainty monitoring and report their confidence, although these skills do develop in the preschool years [@lyons2011].--> Children's responses to these two items were recoded onto a 1-6 scale from 1--*very sure Sam doesn't know* to 6--*very sure Sam knows*. 
 
 The experimenter provided no evaluative feedback on any trials, but did offer consistent neutral feedback (e.g., repeating the child's answer or saying "Okay!"). When a child failed to respond within about 5 seconds or offered a non-canonical response (e.g., saying "Maybe"), the experimenter acknowledged the child's answer and then repeated the question with the possible responses. If a child did not answer after the question was repeated, the experimenter moved on and marked the trial as no response. These were considered "incomplete" sessions and these participants were not included in the final sample.
 
